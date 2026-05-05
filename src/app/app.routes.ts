@@ -39,6 +39,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 
 // ── AKREM ─────────────────────────────────────────────────────────────────────
+import { MlTools } from './pages/ml-tools/ml-tools';
 import { AdminUsers } from './pages/users/users';
 import { AdminClasses } from './pages/admin-classes/admin-classes';
 import { AdminParents } from './pages/admin-parents/admin-parents';
@@ -93,6 +94,7 @@ export const routes: Routes = [
       { path: 'enrollment', component: EnrollmentComponent },
       { path: 'reports', component: Reports },
       { path: 'payments', component: Payments },
+      { path: 'ml-tools', component: MlTools },
       { path: 'users', component: AdminUsers },
       { path: 'classes', component: AdminClasses },
       { path: 'parents', component: AdminParents },
