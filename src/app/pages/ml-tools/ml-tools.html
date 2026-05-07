@@ -1,195 +1,317 @@
 <div class="flex flex-col gap-5 font-sans">
-
   <!-- ── Page Header ──────────────────────────────────────────────────────── -->
   <div class="flex justify-between items-start gap-4 flex-wrap">
     <div>
       <h1 class="text-2xl font-bold text-slate-900 flex items-center gap-2.5 mb-1">
         AI Tools
-        <span class="bg-gradient-to-br from-[#5F2DED] to-[#B13BFF] text-white text-[0.65rem] font-bold py-[3px] px-[9px] rounded-full tracking-wider align-middle">ML</span>
+        <span
+          class="bg-gradient-to-br from-[#5F2DED] to-[#B13BFF] text-white text-[0.65rem] font-bold py-[3px] px-[9px] rounded-full tracking-wider align-middle"
+          >ML</span
+        >
       </h1>
-      <p class="text-sm text-slate-500">Machine-learning insights across dropout, grades, segments, and payment risk</p>
+      <p class="text-sm text-slate-500">
+        Machine-learning insights across dropout, grades, segments, and payment risk
+      </p>
     </div>
-    <button class="px-[18px] py-[9px] bg-slate-900 text-white border-none rounded-lg text-[0.8125rem] font-semibold cursor-pointer whitespace-nowrap transition-colors duration-150 flex-shrink-0 hover:bg-slate-800 disabled:opacity-55 disabled:cursor-not-allowed" (click)="buildDataset()" [disabled]="building">
+    <button
+      class="px-[18px] py-[9px] bg-slate-900 text-white border-none rounded-lg text-[0.8125rem] font-semibold cursor-pointer whitespace-nowrap transition-colors duration-150 flex-shrink-0 hover:bg-slate-800 disabled:opacity-55 disabled:cursor-not-allowed"
+      (click)="buildDataset()"
+      [disabled]="building"
+    >
       <span *ngIf="!building">⚡ Build / Refresh Dataset</span>
       <span *ngIf="building">⏳ Building…</span>
     </button>
   </div>
 
-  <div *ngIf="buildSuccess" class="px-4 py-3 bg-green-50 text-green-800 border border-green-200 rounded-lg text-sm font-medium animate-[slideIn_0.25s_ease]">✅ {{ buildSuccess }}</div>
-  <div *ngIf="buildError"   class="px-4 py-3 bg-red-50 text-red-800 border border-red-200 rounded-lg text-sm font-medium animate-[slideIn_0.25s_ease]">⚠️ {{ buildError }}</div>
+  <div
+    *ngIf="buildSuccess"
+    class="px-4 py-3 bg-green-50 text-green-800 border border-green-200 rounded-lg text-sm font-medium animate-[slideIn_0.25s_ease]"
+  >
+    ✅ {{ buildSuccess }}
+  </div>
+  <div
+    *ngIf="buildError"
+    class="px-4 py-3 bg-red-50 text-red-800 border border-red-200 rounded-lg text-sm font-medium animate-[slideIn_0.25s_ease]"
+  >
+    ⚠️ {{ buildError }}
+  </div>
 
   <!-- ── Tab Bar ───────────────────────────────────────────────────────────── -->
   <div class="flex gap-1 bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
-    <button class="flex-1 px-[14px] py-[9px] border-none bg-none rounded-lg text-[0.8125rem] font-medium text-slate-500 cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 whitespace-nowrap hover:bg-slate-100 hover:text-slate-800" [class.!bg-slate-900 !text-white !shadow-md]="activeTab === 'dso1'" (click)="setTab('dso1')">
+    <button
+      class="flex-1 px-[14px] py-[9px] border-none bg-none rounded-lg text-[0.8125rem] font-medium text-slate-500 cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 whitespace-nowrap hover:bg-slate-100 hover:text-slate-800"
+      [class.!bg-slate-900 !text-white !shadow-md]="activeTab === 'dso1'"
+      (click)="setTab('dso1')"
+    >
       <span class="text-base">🎓</span> Dropout Risk
     </button>
-    <button class="flex-1 px-[14px] py-[9px] border-none bg-none rounded-lg text-[0.8125rem] font-medium text-slate-500 cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 whitespace-nowrap hover:bg-slate-100 hover:text-slate-800" [class.!bg-slate-900 !text-white !shadow-md]="activeTab === 'dso2'" (click)="setTab('dso2')">
+    <button
+      class="flex-1 px-[14px] py-[9px] border-none bg-none rounded-lg text-[0.8125rem] font-medium text-slate-500 cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 whitespace-nowrap hover:bg-slate-100 hover:text-slate-800"
+      [class.!bg-slate-900 !text-white !shadow-md]="activeTab === 'dso2'"
+      (click)="setTab('dso2')"
+    >
       <span class="text-base">📈</span> Grade Prediction
     </button>
-    <button class="flex-1 px-[14px] py-[9px] border-none bg-none rounded-lg text-[0.8125rem] font-medium text-slate-500 cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 whitespace-nowrap hover:bg-slate-100 hover:text-slate-800" [class.!bg-slate-900 !text-white !shadow-md]="activeTab === 'dso3'" (click)="setTab('dso3')">
+    <button
+      class="flex-1 px-[14px] py-[9px] border-none bg-none rounded-lg text-[0.8125rem] font-medium text-slate-500 cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 whitespace-nowrap hover:bg-slate-100 hover:text-slate-800"
+      [class.!bg-slate-900 !text-white !shadow-md]="activeTab === 'dso3'"
+      (click)="setTab('dso3')"
+    >
       <span class="text-base">🔬</span> Student Segments
     </button>
-    <button class="flex-1 px-[14px] py-[9px] border-none bg-none rounded-lg text-[0.8125rem] font-medium text-slate-500 cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 whitespace-nowrap hover:bg-slate-100 hover:text-slate-800" [class.!bg-slate-900 !text-white !shadow-md]="activeTab === 'dso4'" (click)="setTab('dso4')">
+    <button
+      class="flex-1 px-[14px] py-[9px] border-none bg-none rounded-lg text-[0.8125rem] font-medium text-slate-500 cursor-pointer flex items-center justify-center gap-1.5 transition-all duration-150 whitespace-nowrap hover:bg-slate-100 hover:text-slate-800"
+      [class.!bg-slate-900 !text-white !shadow-md]="activeTab === 'dso4'"
+      (click)="setTab('dso4')"
+    >
       <span class="text-base">💳</span> Payment Risk
     </button>
   </div>
 
   <!-- ── Loading spinner ──────────────────────────────────────────────────── -->
-  <div *ngIf="loading" class="flex items-center justify-center gap-3 py-[60px] text-slate-500 text-sm">
-    <div class="w-6 h-6 border-3 border-slate-200 border-t-[#5F2DED] rounded-full animate-spin"></div>
+  <div
+    *ngIf="loading"
+    class="flex items-center justify-center gap-3 py-[60px] text-slate-500 text-sm"
+  >
+    <div
+      class="w-6 h-6 border-3 border-slate-200 border-t-[#5F2DED] rounded-full animate-spin"
+    ></div>
     <span>Loading ML data…</span>
   </div>
 
   <!-- ── Dataset needed ────────────────────────────────────────────────────── -->
-  <div *ngIf="datasetNeeded && !loading && !building" class="text-center py-[60px] px-5 bg-white rounded-xl border border-slate-200">
+  <div
+    *ngIf="datasetNeeded && !loading && !building"
+    class="text-center py-[60px] px-5 bg-white rounded-xl border border-slate-200"
+  >
     <div class="text-3xl mb-3">⚡</div>
     <h3 class="text-lg font-bold text-slate-800 mb-2">Dataset not built yet</h3>
-    <p class="text-sm text-slate-500 max-w-[420px] mx-auto">Click <strong>Build / Refresh Dataset</strong> above to assemble data from all databases and train the ML models. This takes ~20–30 seconds.</p>
+    <p class="text-sm text-slate-500 max-w-[420px] mx-auto">
+      Click <strong>Build / Refresh Dataset</strong> above to assemble data from all databases and
+      train the ML models. This takes ~20–30 seconds.
+    </p>
   </div>
 
   <!-- ════════════════════════════════════════════════════════════════════════ -->
-  <!-- TAB 1 — DROPOUT RISK (DSO1)                                            -->
+  <!-- TAB 1 — DROPOUT RISK (DSO1)  eeeee                                          -->
   <!-- ════════════════════════════════════════════════════════════════════════ -->
   <div *ngIf="activeTab === 'dso1' && !loading && !datasetNeeded">
-
     <!-- ── Row 1: KPI Sparkline Cards ─────────────────────────────────────── -->
     <div *ngIf="dso1Summary" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-
-      <div class="bg-white rounded-xl p-4 shadow-sm border-l-[3px] border-l-red-600 flex flex-col gap-2.5">
+      <div
+        class="bg-white rounded-xl p-4 shadow-sm border-l-[3px] border-l-red-600 flex flex-col gap-2.5"
+      >
         <div class="flex justify-between items-start">
           <div>
-            <div class="text-3xl font-semibold leading-none mb-1.5 text-red-600">{{ dso1Summary.critical_count }}</div>
-            <div class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">Critical risk (&gt;80%)</div>
+            <div class="text-3xl font-semibold leading-none mb-1.5 text-red-600">
+              {{ dso1Summary.critical_count }}
+            </div>
+            <div class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">
+              Critical risk (&gt;80%)
+            </div>
           </div>
           <div class="text-xl font-black leading-none opacity-80 text-red-800">⚠</div>
         </div>
         <div class="flex items-end gap-[3px] h-8">
-          <div *ngFor="let b of dso1Summary.probability_distribution"
-               class="flex-1 min-w-2 rounded-t-[2px] opacity-80 transition-height duration-300"
-               [style.height.px]="kpiSparkH(dso1Summary.probability_distribution, b.count)"
-               [style.background]="b.color">
-          </div>
+          <div
+            *ngFor="let b of dso1Summary.probability_distribution"
+            class="flex-1 min-w-2 rounded-t-[2px] opacity-80 transition-height duration-300"
+            [style.height.px]="kpiSparkH(dso1Summary.probability_distribution, b.count)"
+            [style.background]="b.color"
+          ></div>
         </div>
         <div class="text-[0.75rem] text-slate-400">Immediate intervention needed</div>
       </div>
 
-      <div class="bg-white rounded-xl p-4 shadow-sm border-l-[3px] border-l-amber-600 flex flex-col gap-2.5">
+      <div
+        class="bg-white rounded-xl p-4 shadow-sm border-l-[3px] border-l-amber-600 flex flex-col gap-2.5"
+      >
         <div class="flex justify-between items-start">
           <div>
-            <div class="text-3xl font-semibold leading-none mb-1.5 text-amber-600">{{ dso1Summary.high_count }}</div>
-            <div class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">High risk (60–80%)</div>
+            <div class="text-3xl font-semibold leading-none mb-1.5 text-amber-600">
+              {{ dso1Summary.high_count }}
+            </div>
+            <div class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">
+              High risk (60–80%)
+            </div>
           </div>
           <div class="text-xl font-black leading-none opacity-80 text-amber-600">!</div>
         </div>
         <div class="flex items-end gap-[3px] h-8">
-          <div *ngFor="let b of dso1Summary.probability_distribution"
-               class="flex-1 min-w-2 rounded-t-[2px] opacity-80 transition-height duration-300"
-               [style.height.px]="kpiSparkH(dso1Summary.probability_distribution, b.count)"
-               [style.background]="b.color">
-          </div>
+          <div
+            *ngFor="let b of dso1Summary.probability_distribution"
+            class="flex-1 min-w-2 rounded-t-[2px] opacity-80 transition-height duration-300"
+            [style.height.px]="kpiSparkH(dso1Summary.probability_distribution, b.count)"
+            [style.background]="b.color"
+          ></div>
         </div>
         <div class="text-[0.75rem] text-slate-400">Close monitoring required</div>
       </div>
 
-      <div class="bg-white rounded-xl p-4 shadow-sm border-l-[3px] border-l-blue-600 flex flex-col gap-2.5">
+      <div
+        class="bg-white rounded-xl p-4 shadow-sm border-l-[3px] border-l-blue-600 flex flex-col gap-2.5"
+      >
         <div class="flex justify-between items-start">
           <div>
-            <div class="text-3xl font-semibold leading-none mb-1.5 text-blue-600">{{ dso1Summary.moderate_count }}</div>
-            <div class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">Moderate risk (40–60%)</div>
+            <div class="text-3xl font-semibold leading-none mb-1.5 text-blue-600">
+              {{ dso1Summary.moderate_count }}
+            </div>
+            <div class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">
+              Moderate risk (40–60%)
+            </div>
           </div>
           <div class="text-xl font-black leading-none opacity-80 text-blue-600">~</div>
         </div>
         <div class="flex items-end gap-[3px] h-8">
-          <div *ngFor="let b of dso1Summary.probability_distribution"
-               class="flex-1 min-w-2 rounded-t-[2px] opacity-80 transition-height duration-300"
-               [style.height.px]="kpiSparkH(dso1Summary.probability_distribution, b.count)"
-               [style.background]="b.color">
-          </div>
+          <div
+            *ngFor="let b of dso1Summary.probability_distribution"
+            class="flex-1 min-w-2 rounded-t-[2px] opacity-80 transition-height duration-300"
+            [style.height.px]="kpiSparkH(dso1Summary.probability_distribution, b.count)"
+            [style.background]="b.color"
+          ></div>
         </div>
         <div class="text-[0.75rem] text-slate-400">Keep an eye on them</div>
       </div>
 
-      <div class="bg-white rounded-xl p-4 shadow-sm border-l-[3px] border-l-emerald-600 flex flex-col gap-2.5">
+      <div
+        class="bg-white rounded-xl p-4 shadow-sm border-l-[3px] border-l-emerald-600 flex flex-col gap-2.5"
+      >
         <div class="flex justify-between items-start">
           <div>
-            <div class="text-3xl font-semibold leading-none mb-1.5 text-emerald-600">{{ (dso1Summary.overall_dropout_rate * 100).toFixed(1) }}%</div>
-            <div class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">Overall dropout rate</div>
+            <div class="text-3xl font-semibold leading-none mb-1.5 text-emerald-600">
+              {{ (dso1Summary.overall_dropout_rate * 100).toFixed(1) }}%
+            </div>
+            <div class="text-[0.7rem] font-semibold uppercase tracking-wider text-slate-500">
+              Overall dropout rate
+            </div>
           </div>
           <div class="text-xl font-black leading-none opacity-80 text-emerald-600">%</div>
         </div>
         <div class="flex items-end gap-[3px] h-8">
-          <div *ngFor="let b of dso1Summary.probability_distribution"
-               class="flex-1 min-w-2 rounded-t-[2px] opacity-80 transition-height duration-300"
-               [style.height.px]="kpiSparkH(dso1Summary.probability_distribution, b.count)"
-               [style.background]="b.color">
-          </div>
+          <div
+            *ngFor="let b of dso1Summary.probability_distribution"
+            class="flex-1 min-w-2 rounded-t-[2px] opacity-80 transition-height duration-300"
+            [style.height.px]="kpiSparkH(dso1Summary.probability_distribution, b.count)"
+            [style.background]="b.color"
+          ></div>
         </div>
-        <div class="text-[0.75rem] text-slate-400">{{ dso1Summary.total_students }} students total</div>
+        <div class="text-[0.75rem] text-slate-400">
+          {{ dso1Summary.total_students }} students total
+        </div>
       </div>
-
     </div>
 
     <!-- ── Row 2: Funnel · Retention · Weekly trend ────────────────────────── -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-5">
-
       <!-- Dropout funnel -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5 flex items-center gap-2.5">Dropout Pipeline</div>
+        <div
+          class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5 flex items-center gap-2.5"
+        >
+          Dropout Pipeline
+        </div>
         <div class="flex flex-col gap-1" *ngIf="dso1Funnel?.stages?.length">
           <div *ngFor="let stage of dso1Funnel.stages; let i = index" class="flex flex-col gap-0.5">
             <div class="flex items-center gap-2">
-              <span class="text-[0.72rem] text-slate-500 w-[90px] flex-shrink-0">{{ stage.label }}</span>
+              <span class="text-[0.72rem] text-slate-500 w-[90px] flex-shrink-0">{{
+                stage.label
+              }}</span>
               <div class="flex-1 bg-slate-100 rounded-[3px] h-2">
-                <div class="h-2 rounded-[3px] transition-width duration-300"
-                     [style.width.%]="funnelPct(stage.count)"
-                     [style.background]="stage.color">
-                </div>
+                <div
+                  class="h-2 rounded-[3px] transition-width duration-300"
+                  [style.width.%]="funnelPct(stage.count)"
+                  [style.background]="stage.color"
+                ></div>
               </div>
-              <span class="text-[0.75rem] font-semibold w-9 text-right flex-shrink-0" [style.color]="stage.color">{{ stage.count }}</span>
+              <span
+                class="text-[0.75rem] font-semibold w-9 text-right flex-shrink-0"
+                [style.color]="stage.color"
+                >{{ stage.count }}</span
+              >
             </div>
-            <div *ngIf="i < dso1Funnel.stages.length - 1" class="text-[0.6rem] text-slate-300 text-center pl-[94px] py-0.5">▼</div>
+            <div
+              *ngIf="i < dso1Funnel.stages.length - 1"
+              class="text-[0.6rem] text-slate-300 text-center pl-[94px] py-0.5"
+            >
+              ▼
+            </div>
           </div>
         </div>
-        <div *ngIf="!dso1Funnel?.stages?.length" class="text-center text-slate-400 py-6 text-[0.8125rem]">No data</div>
+        <div
+          *ngIf="!dso1Funnel?.stages?.length"
+          class="text-center text-slate-400 py-6 text-[0.8125rem]"
+        >
+          No data
+        </div>
       </div>
 
       <!-- Retention by level -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5 flex items-center gap-2.5">Retention by Level</div>
+        <div
+          class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5 flex items-center gap-2.5"
+        >
+          Retention by Level
+        </div>
         <div class="flex flex-col gap-2.5">
           <div *ngFor="let r of dso1Retention" class="flex items-center gap-2">
-            <span class="text-[0.78rem] font-semibold text-slate-700 w-7 flex-shrink-0">{{ r.level }}</span>
+            <span class="text-[0.78rem] font-semibold text-slate-700 w-7 flex-shrink-0">{{
+              r.level
+            }}</span>
             <div class="flex-1 bg-slate-100 rounded-[3px] h-[7px]">
-              <div class="h-[7px] rounded-[3px] transition-width duration-300"
-                   [style.width.%]="r.retention_rate * 100"
-                   [style.background]="retentionColor(r.retention_rate)">
-              </div>
+              <div
+                class="h-[7px] rounded-[3px] transition-width duration-300"
+                [style.width.%]="r.retention_rate * 100"
+                [style.background]="retentionColor(r.retention_rate)"
+              ></div>
             </div>
-            <span class="text-[0.75rem] font-bold w-9 text-right flex-shrink-0" [style.color]="retentionColor(r.retention_rate)">
+            <span
+              class="text-[0.75rem] font-bold w-9 text-right flex-shrink-0"
+              [style.color]="retentionColor(r.retention_rate)"
+            >
               {{ (r.retention_rate * 100).toFixed(0) }}%
             </span>
             <span class="text-[0.7rem] w-9 flex-shrink-0 text-slate-500">({{ r.count }})</span>
           </div>
-          <div *ngIf="!dso1Retention.length" class="text-center text-slate-400 py-6 text-[0.8125rem]">No data</div>
+          <div
+            *ngIf="!dso1Retention.length"
+            class="text-center text-slate-400 py-6 text-[0.8125rem]"
+          >
+            No data
+          </div>
         </div>
       </div>
 
       <!-- Weekly dropout trend bar chart -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5 flex items-center gap-2.5">
+        <div
+          class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5 flex items-center gap-2.5"
+        >
           Weekly Dropout Trend
-          <span *ngIf="dso1WeeklyTrend" class="text-[0.7rem] font-normal normal-case tracking-normal text-slate-400">
+          <span
+            *ngIf="dso1WeeklyTrend"
+            class="text-[0.7rem] font-normal normal-case tracking-normal text-slate-400"
+          >
             {{ dso1WeeklyTrend.total_risk }} students at risk
           </span>
         </div>
         <div class="flex flex-col gap-1.5" *ngIf="dso1WeeklyTrend?.weeks?.length">
           <div class="flex items-end gap-1.5 h-[90px] pb-1">
-            <div *ngFor="let w of dso1WeeklyTrend.weeks; let i = index" class="flex-1 flex flex-col items-center gap-[3px]">
+            <div
+              *ngFor="let w of dso1WeeklyTrend.weeks; let i = index"
+              class="flex-1 flex flex-col items-center gap-[3px]"
+            >
               <div class="flex-1 flex items-end w-full">
-                <div class="w-full rounded-t-[3px] min-h-1 transition-height duration-300"
-                     [style.height.px]="weeklyBarH(dso1WeeklyTrend.dropout_rate[i])"
-                     [style.background]="dso1WeeklyTrend.dropout_rate[i] >= 0.5 ? '#D85A30' : dso1WeeklyTrend.dropout_rate[i] >= 0.3 ? '#BA7517' : '#1D9E75'">
-                </div>
+                <div
+                  class="w-full rounded-t-[3px] min-h-1 transition-height duration-300"
+                  [style.height.px]="weeklyBarH(dso1WeeklyTrend.dropout_rate[i])"
+                  [style.background]="
+                    dso1WeeklyTrend.dropout_rate[i] >= 0.5
+                      ? '#D85A30'
+                      : dso1WeeklyTrend.dropout_rate[i] >= 0.3
+                        ? '#BA7517'
+                        : '#1D9E75'
+                  "
+                ></div>
               </div>
               <span class="text-[0.62rem] text-slate-400 whitespace-nowrap">{{ w }}</span>
             </div>
@@ -198,81 +320,164 @@
             <span>0%</span><span>{{ (weeklyBarMax * 100).toFixed(0) }}%</span>
           </div>
         </div>
-        <div *ngIf="!dso1WeeklyTrend?.weeks?.length" class="text-center text-slate-400 py-6 text-[0.8125rem]">No trend data</div>
+        <div
+          *ngIf="!dso1WeeklyTrend?.weeks?.length"
+          class="text-center text-slate-400 py-6 text-[0.8125rem]"
+        >
+          No trend data
+        </div>
       </div>
-
     </div>
 
     <!-- ── Row 3: Scatter · Feature correlation ────────────────────────────── -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
-
       <!-- Absence × Dropout scatter -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5 flex items-center gap-2.5">
+        <div
+          class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5 flex items-center gap-2.5"
+        >
           Absence Rate vs Dropout Risk
-          <span *ngIf="dso1Scatter" class="text-[0.7rem] font-normal normal-case tracking-normal text-slate-400">
+          <span
+            *ngIf="dso1Scatter"
+            class="text-[0.7rem] font-normal normal-case tracking-normal text-slate-400"
+          >
             r = {{ dso1Scatter.correlation }}
           </span>
         </div>
         <div class="flex flex-col gap-2.5" *ngIf="dso1Scatter?.points?.length">
-          <svg [attr.viewBox]="'0 0 ' + SC_W + ' ' + SC_H" class="w-full border border-slate-100 rounded-lg bg-slate-50">
+          <svg
+            [attr.viewBox]="'0 0 ' + SC_W + ' ' + SC_H"
+            class="w-full border border-slate-100 rounded-lg bg-slate-50"
+          >
             <!-- Axes -->
-            <line [attr.x1]="SC_PAD" [attr.y1]="SC_H - SC_PAD"
-                  [attr.x2]="SC_W - SC_PAD" [attr.y2]="SC_H - SC_PAD"
-                  stroke="#e2e8f0" stroke-width="1"/>
-            <line [attr.x1]="SC_PAD" [attr.y1]="SC_PAD"
-                  [attr.x2]="SC_PAD" [attr.y2]="SC_H - SC_PAD"
-                  stroke="#e2e8f0" stroke-width="1"/>
+            <line
+              [attr.x1]="SC_PAD"
+              [attr.y1]="SC_H - SC_PAD"
+              [attr.x2]="SC_W - SC_PAD"
+              [attr.y2]="SC_H - SC_PAD"
+              stroke="#e2e8f0"
+              stroke-width="1"
+            />
+            <line
+              [attr.x1]="SC_PAD"
+              [attr.y1]="SC_PAD"
+              [attr.x2]="SC_PAD"
+              [attr.y2]="SC_H - SC_PAD"
+              stroke="#e2e8f0"
+              stroke-width="1"
+            />
             <!-- Trend line -->
-            <line *ngIf="scatterTrendLine"
-                  [attr.x1]="scatterTrendLine.x1" [attr.y1]="scatterTrendLine.y1"
-                  [attr.x2]="scatterTrendLine.x2" [attr.y2]="scatterTrendLine.y2"
-                  stroke="#5F2DED" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.7"/>
+            <line
+              *ngIf="scatterTrendLine"
+              [attr.x1]="scatterTrendLine.x1"
+              [attr.y1]="scatterTrendLine.y1"
+              [attr.x2]="scatterTrendLine.x2"
+              [attr.y2]="scatterTrendLine.y2"
+              stroke="#5F2DED"
+              stroke-width="1.5"
+              stroke-dasharray="4 3"
+              opacity="0.7"
+            />
             <!-- Points -->
-            <circle *ngFor="let p of dso1Scatter.points"
-                    [attr.cx]="scatterX(p.x)" [attr.cy]="scatterY(p.y)" r="3.5"
-                    [attr.fill]="scatterDotColor(p.risk)" fill-opacity="0.65">
-              <title>{{ p.name }} — absence {{ (p.x * 100).toFixed(0) }}%, prob {{ (p.y * 100).toFixed(0) }}%</title>
+            <circle
+              *ngFor="let p of dso1Scatter.points"
+              [attr.cx]="scatterX(p.x)"
+              [attr.cy]="scatterY(p.y)"
+              r="3.5"
+              [attr.fill]="scatterDotColor(p.risk)"
+              fill-opacity="0.65"
+            >
+              <title>
+                {{ p.name }} — absence {{ (p.x * 100).toFixed(0) }}%, prob
+                {{ (p.y * 100).toFixed(0) }}%
+              </title>
             </circle>
             <!-- Axis labels -->
-            <text [attr.x]="SC_W/2" [attr.y]="SC_H - 4" font-size="9" fill="#94a3b8" text-anchor="middle">Absence rate →</text>
-            <text [attr.x]="10" [attr.y]="SC_H/2" font-size="9" fill="#94a3b8" text-anchor="middle"
-                  [attr.transform]="'rotate(-90 10 ' + SC_H/2 + ')'">Dropout prob →</text>
+            <text
+              [attr.x]="SC_W / 2"
+              [attr.y]="SC_H - 4"
+              font-size="9"
+              fill="#94a3b8"
+              text-anchor="middle"
+            >
+              Absence rate →
+            </text>
+            <text
+              [attr.x]="10"
+              [attr.y]="SC_H / 2"
+              font-size="9"
+              fill="#94a3b8"
+              text-anchor="middle"
+              [attr.transform]="'rotate(-90 10 ' + SC_H / 2 + ')'"
+            >
+              Dropout prob →
+            </text>
           </svg>
           <div class="flex gap-3.5 flex-wrap">
-            <div class="flex items-center gap-1.5 text-[0.72rem] text-slate-500"><div class="w-[9px] h-[9px] rounded-full bg-[#991B1B] flex-shrink-0"></div><span>Critical</span></div>
-            <div class="flex items-center gap-1.5 text-[0.72rem] text-slate-500"><div class="w-[9px] h-[9px] rounded-full bg-[#D85A30] flex-shrink-0"></div><span>High</span></div>
-            <div class="flex items-center gap-1.5 text-[0.72rem] text-slate-500"><div class="w-[9px] h-[9px] rounded-full bg-[#BA7517] flex-shrink-0"></div><span>Moderate</span></div>
-            <div class="flex items-center gap-1.5 text-[0.72rem] text-slate-500"><div class="w-[9px] h-[9px] rounded-full bg-[#1D9E75] flex-shrink-0"></div><span>Low</span></div>
-            <div class="flex items-center gap-1.5 text-[0.72rem] text-slate-500"><div class="w-[18px] h-0.5 border-t-2 border-dashed border-[#5F2DED] flex-shrink-0"></div><span>Trend</span></div>
+            <div class="flex items-center gap-1.5 text-[0.72rem] text-slate-500">
+              <div class="w-[9px] h-[9px] rounded-full bg-[#991B1B] flex-shrink-0"></div>
+              <span>Critical</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-[0.72rem] text-slate-500">
+              <div class="w-[9px] h-[9px] rounded-full bg-[#D85A30] flex-shrink-0"></div>
+              <span>High</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-[0.72rem] text-slate-500">
+              <div class="w-[9px] h-[9px] rounded-full bg-[#BA7517] flex-shrink-0"></div>
+              <span>Moderate</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-[0.72rem] text-slate-500">
+              <div class="w-[9px] h-[9px] rounded-full bg-[#1D9E75] flex-shrink-0"></div>
+              <span>Low</span>
+            </div>
+            <div class="flex items-center gap-1.5 text-[0.72rem] text-slate-500">
+              <div
+                class="w-[18px] h-0.5 border-t-2 border-dashed border-[#5F2DED] flex-shrink-0"
+              ></div>
+              <span>Trend</span>
+            </div>
           </div>
         </div>
-        <div *ngIf="!dso1Scatter?.points?.length" class="text-center text-slate-400 py-6 text-[0.8125rem]">No scatter data</div>
+        <div
+          *ngIf="!dso1Scatter?.points?.length"
+          class="text-center text-slate-400 py-6 text-[0.8125rem]"
+        >
+          No scatter data
+        </div>
       </div>
 
       <!-- Feature correlation -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5">Feature Correlation with Dropout</div>
+        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5">
+          Feature Correlation with Dropout
+        </div>
         <div class="flex flex-col gap-[9px]">
           <div *ngFor="let f of dso1Correlation" class="flex items-center gap-2">
-            <span class="text-[0.73rem] text-slate-700 w-[90px] flex-shrink-0">{{ f.feature }}</span>
+            <span class="text-[0.73rem] text-slate-700 w-[90px] flex-shrink-0">{{
+              f.feature
+            }}</span>
             <div class="flex-1 relative h-5 bg-slate-100 rounded-[3px] overflow-hidden">
               <!-- Center line (0) -->
               <div class="absolute left-1/2 top-0 bottom-0 w-[1px] bg-slate-300 z-10"></div>
               <!-- Negative correlation bar (extends left) -->
-              <div *ngIf="f.correlation < 0"
-                   class="absolute right-1/2 top-0.5 bottom-0.5 rounded-l-[3px] transition-width duration-300"
-                   [style.width.%]="corrBarW(f.correlation)"
-                   [style.background]="corrColor(f.correlation)">
-              </div>
+              <div
+                *ngIf="f.correlation < 0"
+                class="absolute right-1/2 top-0.5 bottom-0.5 rounded-l-[3px] transition-width duration-300"
+                [style.width.%]="corrBarW(f.correlation)"
+                [style.background]="corrColor(f.correlation)"
+              ></div>
               <!-- Positive correlation bar (extends right) -->
-              <div *ngIf="f.correlation >= 0"
-                   class="absolute left-1/2 top-0.5 bottom-0.5 rounded-r-[3px] transition-width duration-300"
-                   [style.width.%]="corrBarW(f.correlation)"
-                   [style.background]="corrColor(f.correlation)">
-              </div>
+              <div
+                *ngIf="f.correlation >= 0"
+                class="absolute left-1/2 top-0.5 bottom-0.5 rounded-r-[3px] transition-width duration-300"
+                [style.width.%]="corrBarW(f.correlation)"
+                [style.background]="corrColor(f.correlation)"
+              ></div>
             </div>
-            <span class="text-[0.72rem] font-bold w-10 text-right flex-shrink-0" [style.color]="corrColor(f.correlation)">
+            <span
+              class="text-[0.72rem] font-bold w-10 text-right flex-shrink-0"
+              [style.color]="corrColor(f.correlation)"
+            >
               {{ f.correlation > 0 ? '+' : '' }}{{ f.correlation.toFixed(2) }}
             </span>
           </div>
@@ -282,87 +487,236 @@
             <span>0</span>
             <span>+1.0 (Strong positive)</span>
           </div>
-          <div *ngIf="!dso1Correlation.length" class="text-center text-slate-400 py-6 text-[0.8125rem]">No data</div>
+          <div
+            *ngIf="!dso1Correlation.length"
+            class="text-center text-slate-400 py-6 text-[0.8125rem]"
+          >
+            No data
+          </div>
         </div>
       </div>
-
     </div>
 
     <!-- ── Row 4: Student table ────────────────────────────────────────────── -->
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mt-3">
       <div class="flex justify-between items-center flex-wrap gap-2 mb-3.5">
         <div class="flex gap-1.5 flex-wrap">
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso1RiskFilter === 'all'" (click)="dso1RiskFilter='all'; applyDso1Filters()">All</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso1RiskFilter === 'critical'" (click)="dso1RiskFilter='critical'; applyDso1Filters()">Critical</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso1RiskFilter === 'high'" (click)="dso1RiskFilter='high'; applyDso1Filters()">High</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso1RiskFilter === 'moderate'" (click)="dso1RiskFilter='moderate'; applyDso1Filters()">Moderate</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso1RiskFilter === 'low'" (click)="dso1RiskFilter='low'; applyDso1Filters()">Low</button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso1RiskFilter === 'all'"
+            (click)="dso1RiskFilter = 'all'; applyDso1Filters()"
+          >
+            All
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso1RiskFilter === 'critical'"
+            (click)="dso1RiskFilter = 'critical'; applyDso1Filters()"
+          >
+            Critical
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso1RiskFilter === 'high'"
+            (click)="dso1RiskFilter = 'high'; applyDso1Filters()"
+          >
+            High
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso1RiskFilter === 'moderate'"
+            (click)="dso1RiskFilter = 'moderate'; applyDso1Filters()"
+          >
+            Moderate
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso1RiskFilter === 'low'"
+            (click)="dso1RiskFilter = 'low'; applyDso1Filters()"
+          >
+            Low
+          </button>
         </div>
         <div class="flex gap-1.5 items-center flex-wrap">
-          <select class="px-[10px] py-[6px] border border-slate-200 rounded-lg bg-white text-slate-700 text-[0.8125rem] cursor-pointer" [(ngModel)]="dso1LevelFilter" (change)="applyDso1Filters()">
+          <select
+            class="px-[10px] py-[6px] border border-slate-200 rounded-lg bg-white text-slate-700 text-[0.8125rem] cursor-pointer"
+            [(ngModel)]="dso1LevelFilter"
+            (change)="applyDso1Filters()"
+          >
             <option value="all">All levels</option>
-            <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
+            <option>L1</option>
+            <option>L2</option>
+            <option>L3</option>
+            <option>M1</option>
+            <option>M2</option>
           </select>
-          <input class="px-[10px] py-[6px] border border-slate-200 rounded-lg text-[0.8125rem] text-slate-700 w-[180px] outline-none focus:border-[#5F2DED]" placeholder="Search student…" [(ngModel)]="dso1Search" (input)="applyDso1Filters()" />
+          <input
+            class="px-[10px] py-[6px] border border-slate-200 rounded-lg text-[0.8125rem] text-slate-700 w-[180px] outline-none focus:border-[#5F2DED]"
+            placeholder="Search student…"
+            [(ngModel)]="dso1Search"
+            (input)="applyDso1Filters()"
+          />
         </div>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[0.8125rem]">
-          <thead><tr>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Student</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Level</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Dropout prob.</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">8-wk trend</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Risk</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Flags</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Absence</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Avg. note</th>
-          </tr></thead>
+          <thead>
+            <tr>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Student
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Level
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Dropout prob.
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                8-wk trend
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Risk
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Flags
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Absence
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Avg. note
+              </th>
+            </tr>
+          </thead>
           <tbody>
             <tr *ngFor="let s of dso1Students" class="hover:bg-slate-50">
               <td class="p-[10px] border-b border-slate-50 align-middle">
                 <div class="flex items-center gap-[9px]">
-                  <div class="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[0.6875rem] font-bold flex-shrink-0" [style.background]="s.avatar_color + '22'" [style.color]="s.avatar_color">{{ s.initials }}</div>
+                  <div
+                    class="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[0.6875rem] font-bold flex-shrink-0"
+                    [style.background]="s.avatar_color + '22'"
+                    [style.color]="s.avatar_color"
+                  >
+                    {{ s.initials }}
+                  </div>
                   <div>
                     <div class="font-semibold text-slate-800 text-[0.8125rem]">{{ s.name }}</div>
                     <div class="text-[0.7rem] text-slate-400">{{ s.email }}</div>
                   </div>
                 </div>
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">{{ s.level }}</td>
+              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">
+                {{ s.level }}
+              </td>
               <td class="p-[10px] border-b border-slate-50 align-middle">
                 <div class="flex items-center gap-[7px]">
                   <div class="flex-1 bg-slate-100 rounded-[3px] h-1.5 min-w-[70px]">
-                    <div class="h-1.5 rounded-[3px] transition-width duration-300"
+                    <div
+                      class="h-1.5 rounded-[3px] transition-width duration-300"
                       [style.width.%]="s.dropout_prob * 100"
-                      [style.background]="s.dropout_prob >= 0.8 ? '#DC2626' : s.dropout_prob >= 0.6 ? '#D97706' : s.dropout_prob >= 0.4 ? '#F59E0B' : '#16A34A'">
-                    </div>
+                      [style.background]="
+                        s.dropout_prob >= 0.8
+                          ? '#DC2626'
+                          : s.dropout_prob >= 0.6
+                            ? '#D97706'
+                            : s.dropout_prob >= 0.4
+                              ? '#F59E0B'
+                              : '#16A34A'
+                      "
+                    ></div>
                   </div>
-                  <span class="font-semibold text-[0.8rem] w-8 flex-shrink-0"
-                    [style.color]="s.dropout_prob >= 0.8 ? '#DC2626' : s.dropout_prob >= 0.6 ? '#D97706' : '#16A34A'">
+                  <span
+                    class="font-semibold text-[0.8rem] w-8 flex-shrink-0"
+                    [style.color]="
+                      s.dropout_prob >= 0.8
+                        ? '#DC2626'
+                        : s.dropout_prob >= 0.6
+                          ? '#D97706'
+                          : '#16A34A'
+                    "
+                  >
                     {{ (s.dropout_prob * 100).toFixed(0) }}%
                   </span>
                 </div>
               </td>
               <td class="p-[10px] border-b border-slate-50 align-middle">
                 <div class="flex items-end gap-0.5 h-7" *ngIf="s.trend?.length">
-                  <div *ngFor="let v of s.trend" class="w-[7px] rounded-t-[2px] opacity-80"
-                       [style.height.px]="getSparkHeight(s.trend, v)"
-                       [style.background]="s.dropout_prob >= 0.6 ? '#D85A30' : s.dropout_prob >= 0.4 ? '#BA7517' : '#1D9E75'">
-                  </div>
+                  <div
+                    *ngFor="let v of s.trend"
+                    class="w-[7px] rounded-t-[2px] opacity-80"
+                    [style.height.px]="getSparkHeight(s.trend, v)"
+                    [style.background]="
+                      s.dropout_prob >= 0.6
+                        ? '#D85A30'
+                        : s.dropout_prob >= 0.4
+                          ? '#BA7517'
+                          : '#1D9E75'
+                    "
+                  ></div>
                 </div>
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle"><span class="inline-block text-[0.65rem] font-bold px-[9px] py-[3px] rounded-[10px] capitalize" [ngClass]="riskBadgeClass(s.risk_level)" [class.bg-red-50!]="riskBadgeClass(s.risk_level).includes('critical')" [class.text-red-800!]="riskBadgeClass(s.risk_level).includes('critical')" [class.bg-amber-50!]="riskBadgeClass(s.risk_level).includes('high')" [class.text-amber-800!]="riskBadgeClass(s.risk_level).includes('high')" [class.bg-orange-50!]="riskBadgeClass(s.risk_level).includes('moderate')" [class.text-orange-800!]="riskBadgeClass(s.risk_level).includes('moderate')" [class.bg-green-50!]="riskBadgeClass(s.risk_level).includes('low')" [class.text-green-800!]="riskBadgeClass(s.risk_level).includes('low')">{{ s.risk_level | titlecase }}</span></td>
               <td class="p-[10px] border-b border-slate-50 align-middle">
-                <span *ngFor="let f of s.flags" class="inline-block text-[0.65rem] px-[7px] py-[2px] rounded mr-0.5 font-medium" [ngClass]="flagClass(f)" [class.bg-red-50!]="flagClass(f).includes('red')" [class.text-red-600!]="flagClass(f).includes('red')" [class.bg-amber-50!]="flagClass(f).includes('orange')" [class.text-amber-600!]="flagClass(f).includes('orange')" [class.bg-slate-100!]="!flagClass(f).includes('red')&&!flagClass(f).includes('orange')" [class.text-slate-600!]="!flagClass(f).includes('red')&&!flagClass(f).includes('orange')">{{ flagLabel(f) }}</span>
+                <span
+                  class="inline-block text-[0.65rem] font-bold px-[9px] py-[3px] rounded-[10px] capitalize"
+                  [ngClass]="riskBadgeClass(s.risk_level)"
+                  [class.bg-red-50!]="riskBadgeClass(s.risk_level).includes('critical')"
+                  [class.text-red-800!]="riskBadgeClass(s.risk_level).includes('critical')"
+                  [class.bg-amber-50!]="riskBadgeClass(s.risk_level).includes('high')"
+                  [class.text-amber-800!]="riskBadgeClass(s.risk_level).includes('high')"
+                  [class.bg-orange-50!]="riskBadgeClass(s.risk_level).includes('moderate')"
+                  [class.text-orange-800!]="riskBadgeClass(s.risk_level).includes('moderate')"
+                  [class.bg-green-50!]="riskBadgeClass(s.risk_level).includes('low')"
+                  [class.text-green-800!]="riskBadgeClass(s.risk_level).includes('low')"
+                  >{{ s.risk_level | titlecase }}</span
+                >
+              </td>
+              <td class="p-[10px] border-b border-slate-50 align-middle">
+                <span
+                  *ngFor="let f of s.flags"
+                  class="inline-block text-[0.65rem] px-[7px] py-[2px] rounded mr-0.5 font-medium"
+                  [ngClass]="flagClass(f)"
+                  [class.bg-red-50!]="flagClass(f).includes('red')"
+                  [class.text-red-600!]="flagClass(f).includes('red')"
+                  [class.bg-amber-50!]="flagClass(f).includes('orange')"
+                  [class.text-amber-600!]="flagClass(f).includes('orange')"
+                  [class.bg-slate-100!]="
+                    !flagClass(f).includes('red') && !flagClass(f).includes('orange')
+                  "
+                  [class.text-slate-600!]="
+                    !flagClass(f).includes('red') && !flagClass(f).includes('orange')
+                  "
+                  >{{ flagLabel(f) }}</span
+                >
                 <span *ngIf="!s.flags?.length" class="text-slate-500">—</span>
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">{{ (s.absence_rate * 100).toFixed(0) }}%</td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">{{ s.note_moyenne?.toFixed(1) ?? '—' }}</td>
+              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">
+                {{ (s.absence_rate * 100).toFixed(0) }}%
+              </td>
+              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">
+                {{ s.note_moyenne?.toFixed(1) ?? '—' }}
+              </td>
             </tr>
             <tr *ngIf="!dso1Students.length">
-              <td colspan="8" class="text-center text-slate-400 py-6 text-[0.8125rem]">No students match the current filters</td>
+              <td colspan="8" class="text-center text-slate-400 py-6 text-[0.8125rem]">
+                No students match the current filters
+              </td>
             </tr>
           </tbody>
         </table>
@@ -371,38 +725,57 @@
 
     <!-- ── Row 5: 3D Decision Space ──────────────────────────────────────────── -->
     <app-dropout-scatter-3d [students]="dso1Students" [loading]="loading"></app-dropout-scatter-3d>
-
   </div>
 
   <!-- ════════════════════════════════════════════════════════════════════════ -->
   <!-- TAB 2 — GRADE PREDICTION (DSO2)                                        -->
   <!-- ════════════════════════════════════════════════════════════════════════ -->
   <div *ngIf="activeTab === 'dso2' && !loading && !datasetNeeded">
-
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      
       <!-- Grade distribution bar chart -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5">Grade distribution — predicted</div>
+        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5">
+          Grade distribution — predicted
+        </div>
         <div *ngIf="dso2Dist">
           <div class="flex flex-col gap-2 mb-3.5">
             <div *ngFor="let b of distBars" class="flex items-center gap-2.5">
-              <span class="text-[0.75rem] text-slate-500 w-[52px] flex-shrink-0">{{ b.range }}</span>
+              <span class="text-[0.75rem] text-slate-500 w-[52px] flex-shrink-0">{{
+                b.range
+              }}</span>
               <div class="flex-1 bg-slate-100 rounded-[3px] h-2">
-                <div class="h-2 rounded-[3px] transition-width duration-300" [style.width.%]="b.pct" [style.background]="b.color"></div>
+                <div
+                  class="h-2 rounded-[3px] transition-width duration-300"
+                  [style.width.%]="b.pct"
+                  [style.background]="b.color"
+                ></div>
               </div>
               <span class="text-[0.75rem] text-slate-500 w-7 text-right">{{ b.count }}</span>
             </div>
           </div>
           <div class="flex gap-4 text-[0.75rem] text-slate-500 pt-[10px] border-t border-slate-100">
-            <div>Cohort avg <strong class="text-slate-800">{{ dso2Dist.cohort_avg }}</strong></div>
-            <div>Median <strong class="text-slate-800">{{ dso2Dist.cohort_median }}</strong></div>
-            <div class="text-red-600">Fail rate <strong>{{ (dso2Dist.fail_rate * 100).toFixed(1) }}%</strong></div>
+            <div>
+              Cohort avg <strong class="text-slate-800">{{ dso2Dist.cohort_avg }}</strong>
+            </div>
+            <div>
+              Median <strong class="text-slate-800">{{ dso2Dist.cohort_median }}</strong>
+            </div>
+            <div class="text-red-600">
+              Fail rate <strong>{{ (dso2Dist.fail_rate * 100).toFixed(1) }}%</strong>
+            </div>
           </div>
           <div class="mt-3">
-            <select class="px-[10px] py-[6px] border border-slate-200 rounded-lg bg-white text-slate-700 text-[0.8125rem] cursor-pointer" [(ngModel)]="dso2LevelFilter" (change)="applyDso2Filters()">
+            <select
+              class="px-[10px] py-[6px] border border-slate-200 rounded-lg bg-white text-slate-700 text-[0.8125rem] cursor-pointer"
+              [(ngModel)]="dso2LevelFilter"
+              (change)="applyDso2Filters()"
+            >
               <option value="all">All levels</option>
-              <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
+              <option>L1</option>
+              <option>L2</option>
+              <option>L3</option>
+              <option>M1</option>
+              <option>M2</option>
             </select>
           </div>
         </div>
@@ -410,22 +783,39 @@
 
       <!-- Top declining students -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5">Top declining students</div>
+        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5">
+          Top declining students
+        </div>
         <div class="flex flex-col gap-[10px]">
           <div *ngFor="let s of dso2Declining" class="flex items-center gap-2.5">
-            <div class="text-[0.8rem] text-slate-700 w-[140px] flex-shrink-0 font-medium">{{ s.name }}</div>
+            <div class="text-[0.8rem] text-slate-700 w-[140px] flex-shrink-0 font-medium">
+              {{ s.name }}
+            </div>
             <div class="flex-1 flex items-center gap-2">
               <div class="flex-1 bg-slate-100 rounded-[3px] h-[5px]">
-                <div class="h-[5px] rounded-[3px] transition-width duration-300" [style.width.%]="s.bar_width_pct"
-                  [style.background]="s.direction === 'down' ? '#DC2626' : '#16A34A'"></div>
+                <div
+                  class="h-[5px] rounded-[3px] transition-width duration-300"
+                  [style.width.%]="s.bar_width_pct"
+                  [style.background]="s.direction === 'down' ? '#DC2626' : '#16A34A'"
+                ></div>
               </div>
-              <span class="text-[0.8rem] font-semibold text-slate-800 w-7">{{ s.predicted_grade }}</span>
+              <span class="text-[0.8rem] font-semibold text-slate-800 w-7">{{
+                s.predicted_grade
+              }}</span>
             </div>
-            <span class="text-[0.75rem] font-bold w-10 text-right" [style.color]="s.delta < 0 ? '#DC2626' : '#16A34A'">
+            <span
+              class="text-[0.75rem] font-bold w-10 text-right"
+              [style.color]="s.delta < 0 ? '#DC2626' : '#16A34A'"
+            >
               {{ s.delta > 0 ? '▲' : '▼' }}{{ Math.abs(s.delta).toFixed(1) }}
             </span>
           </div>
-          <div *ngIf="!dso2Declining.length" class="text-center text-slate-400 py-6 text-[0.8125rem]">No data</div>
+          <div
+            *ngIf="!dso2Declining.length"
+            class="text-center text-slate-400 py-6 text-[0.8125rem]"
+          >
+            No data
+          </div>
         </div>
       </div>
     </div>
@@ -434,60 +824,171 @@
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mt-3">
       <div class="flex justify-between items-center flex-wrap gap-2 mb-3.5">
         <div class="flex gap-1.5 flex-wrap">
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso2StatusFilter === 'all'" (click)="dso2StatusFilter='all'; applyDso2Filters()">All</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso2StatusFilter === 'declining'" (click)="dso2StatusFilter='declining'; applyDso2Filters()">Declining</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso2StatusFilter === 'stable'" (click)="dso2StatusFilter='stable'; applyDso2Filters()">Stable</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso2StatusFilter === 'improving'" (click)="dso2StatusFilter='improving'; applyDso2Filters()">Improving</button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso2StatusFilter === 'all'"
+            (click)="dso2StatusFilter = 'all'; applyDso2Filters()"
+          >
+            All
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso2StatusFilter === 'declining'"
+            (click)="dso2StatusFilter = 'declining'; applyDso2Filters()"
+          >
+            Declining
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso2StatusFilter === 'stable'"
+            (click)="dso2StatusFilter = 'stable'; applyDso2Filters()"
+          >
+            Stable
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso2StatusFilter === 'improving'"
+            (click)="dso2StatusFilter = 'improving'; applyDso2Filters()"
+          >
+            Improving
+          </button>
         </div>
         <div class="flex gap-1.5 items-center flex-wrap">
-          <select class="px-[10px] py-[6px] border border-slate-200 rounded-lg bg-white text-slate-700 text-[0.8125rem] cursor-pointer" [(ngModel)]="dso2LevelFilter" (change)="applyDso2Filters()">
+          <select
+            class="px-[10px] py-[6px] border border-slate-200 rounded-lg bg-white text-slate-700 text-[0.8125rem] cursor-pointer"
+            [(ngModel)]="dso2LevelFilter"
+            (change)="applyDso2Filters()"
+          >
             <option value="all">All levels</option>
-            <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
+            <option>L1</option>
+            <option>L2</option>
+            <option>L3</option>
+            <option>M1</option>
+            <option>M2</option>
           </select>
-          <input class="px-[10px] py-[6px] border border-slate-200 rounded-lg text-[0.8125rem] text-slate-700 w-[180px] outline-none focus:border-[#5F2DED]" placeholder="Search student…" [(ngModel)]="dso2Search" (input)="applyDso2Filters()" />
+          <input
+            class="px-[10px] py-[6px] border border-slate-200 rounded-lg text-[0.8125rem] text-slate-700 w-[180px] outline-none focus:border-[#5F2DED]"
+            placeholder="Search student…"
+            [(ngModel)]="dso2Search"
+            (input)="applyDso2Filters()"
+          />
         </div>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[0.8125rem]">
-          <thead><tr>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Student</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Level</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Current avg</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Predicted grade</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Confidence</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Trend</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Status</th>
-          </tr></thead>
+          <thead>
+            <tr>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Student
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Level
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Current avg
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Predicted grade
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Confidence
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Trend
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Status
+              </th>
+            </tr>
+          </thead>
           <tbody>
             <tr *ngFor="let s of dso2Students" class="hover:bg-slate-50">
               <td class="p-[10px] border-b border-slate-50 align-middle">
                 <div class="flex items-center gap-[9px]">
-                  <div class="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[0.6875rem] font-bold flex-shrink-0" [style.background]="s.avatar_color + '22'" [style.color]="s.avatar_color">{{ s.initials }}</div>
+                  <div
+                    class="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[0.6875rem] font-bold flex-shrink-0"
+                    [style.background]="s.avatar_color + '22'"
+                    [style.color]="s.avatar_color"
+                  >
+                    {{ s.initials }}
+                  </div>
                   <span class="font-semibold text-slate-800 text-[0.8125rem]">{{ s.name }}</span>
                 </div>
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">{{ s.level }}</td>
-              <td class="p-[10px] border-b border-slate-50 align-middle font-mono text-[0.75rem]">{{ s.current_avg }}</td>
+              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">
+                {{ s.level }}
+              </td>
+              <td class="p-[10px] border-b border-slate-50 align-middle font-mono text-[0.75rem]">
+                {{ s.current_avg }}
+              </td>
               <td class="p-[10px] border-b border-slate-50 align-middle">
-                <span class="font-bold text-[0.9375rem]"
-                  [style.color]="s.predicted_grade < 10 ? '#DC2626' : s.predicted_grade >= 14 ? '#16A34A' : '#1e293b'">
+                <span
+                  class="font-bold text-[0.9375rem]"
+                  [style.color]="
+                    s.predicted_grade < 10
+                      ? '#DC2626'
+                      : s.predicted_grade >= 14
+                        ? '#16A34A'
+                        : '#1e293b'
+                  "
+                >
                   {{ s.predicted_grade }}
                 </span>
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500 text-[0.75rem]">{{ s.ci_low }} – {{ s.ci_high }}</td>
+              <td
+                class="p-[10px] border-b border-slate-50 align-middle text-slate-500 text-[0.75rem]"
+              >
+                {{ s.ci_low }} – {{ s.ci_high }}
+              </td>
               <td class="p-[10px] border-b border-slate-50 align-middle">
                 <div class="flex items-end gap-0.5 h-7">
-                  <div *ngFor="let v of s.trend; let i = index" class="w-[7px] rounded-t-[2px] opacity-80"
+                  <div
+                    *ngFor="let v of s.trend; let i = index"
+                    class="w-[7px] rounded-t-[2px] opacity-80"
                     [style.height.px]="getSparkHeight(s.trend, v)"
-                    [style.background]="s.status === 'declining' ? '#DC2626' : s.status === 'improving' ? '#16A34A' : '#94a3b8'">
-                  </div>
+                    [style.background]="
+                      s.status === 'declining'
+                        ? '#DC2626'
+                        : s.status === 'improving'
+                          ? '#16A34A'
+                          : '#94a3b8'
+                    "
+                  ></div>
                 </div>
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle"><span class="inline-block text-[0.65rem] font-bold px-[9px] py-[3px] rounded-[10px] capitalize" [ngClass]="statusBadgeClass(s.status)" [class.bg-green-50!]="statusBadgeClass(s.status).includes('improving')" [class.text-green-800!]="statusBadgeClass(s.status).includes('improving')" [class.bg-red-50!]="statusBadgeClass(s.status).includes('declining')" [class.text-red-800!]="statusBadgeClass(s.status).includes('declining')" [class.bg-slate-100!]="statusBadgeClass(s.status).includes('stable')" [class.text-slate-600!]="statusBadgeClass(s.status).includes('stable')">{{ s.status | titlecase }}</span></td>
+              <td class="p-[10px] border-b border-slate-50 align-middle">
+                <span
+                  class="inline-block text-[0.65rem] font-bold px-[9px] py-[3px] rounded-[10px] capitalize"
+                  [ngClass]="statusBadgeClass(s.status)"
+                  [class.bg-green-50!]="statusBadgeClass(s.status).includes('improving')"
+                  [class.text-green-800!]="statusBadgeClass(s.status).includes('improving')"
+                  [class.bg-red-50!]="statusBadgeClass(s.status).includes('declining')"
+                  [class.text-red-800!]="statusBadgeClass(s.status).includes('declining')"
+                  [class.bg-slate-100!]="statusBadgeClass(s.status).includes('stable')"
+                  [class.text-slate-600!]="statusBadgeClass(s.status).includes('stable')"
+                  >{{ s.status | titlecase }}</span
+                >
+              </td>
             </tr>
             <tr *ngIf="!dso2Students.length">
-              <td colspan="7" class="text-center text-slate-400 py-6 text-[0.8125rem]">No students match the current filters</td>
+              <td colspan="7" class="text-center text-slate-400 py-6 text-[0.8125rem]">
+                No students match the current filters
+              </td>
             </tr>
           </tbody>
         </table>
@@ -499,34 +1000,55 @@
   <!-- TAB 3 — STUDENT SEGMENTS (DSO3)                                        -->
   <!-- ════════════════════════════════════════════════════════════════════════ -->
   <div *ngIf="activeTab === 'dso3' && !loading && !datasetNeeded">
-
     <!-- Silhouette + variance summary -->
     <div *ngIf="dso3Summary" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
       <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
-        <div class="text-3xl font-semibold leading-none mb-[5px] text-[#5F2DED]">{{ dso3Summary.silhouette_score }}</div>
-        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">Silhouette score</div>
+        <div class="text-3xl font-semibold leading-none mb-[5px] text-[#5F2DED]">
+          {{ dso3Summary.silhouette_score }}
+        </div>
+        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">
+          Silhouette score
+        </div>
         <div class="text-[0.75rem] mt-[5px] text-slate-400">Cluster quality (0–1)</div>
       </div>
       <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
-        <div class="text-3xl font-semibold leading-none mb-[5px] text-[#5F2DED]">{{ (dso3Summary.variance_explained_pc1 * 100).toFixed(1) }}%</div>
-        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">Variance — PC1</div>
+        <div class="text-3xl font-semibold leading-none mb-[5px] text-[#5F2DED]">
+          {{ (dso3Summary.variance_explained_pc1 * 100).toFixed(1) }}%
+        </div>
+        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">
+          Variance — PC1
+        </div>
         <div class="text-[0.75rem] mt-[5px] text-slate-400">Principal component 1</div>
       </div>
       <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
-        <div class="text-3xl font-semibold leading-none mb-[5px] text-[#5F2DED]">{{ (dso3Summary.variance_explained_pc2 * 100).toFixed(1) }}%</div>
-        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">Variance — PC2</div>
+        <div class="text-3xl font-semibold leading-none mb-[5px] text-[#5F2DED]">
+          {{ (dso3Summary.variance_explained_pc2 * 100).toFixed(1) }}%
+        </div>
+        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">
+          Variance — PC2
+        </div>
         <div class="text-[0.75rem] mt-[5px] text-slate-400">Principal component 2</div>
       </div>
     </div>
 
     <!-- Cluster cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
-      <div *ngFor="let c of dso3Clusters" class="rounded-xl border-[1.5px] overflow-hidden shadow-sm" [style.border-color]="c.color">
+      <div
+        *ngFor="let c of dso3Clusters"
+        class="rounded-xl border-[1.5px] overflow-hidden shadow-sm"
+        [style.border-color]="c.color"
+      >
         <div class="p-4" [style.background]="c.bg_color">
-          <div class="inline-block text-[0.65rem] font-bold px-[9px] py-[2px] rounded-[10px] mb-1.5" [style.color]="c.text_color" [style.background]="c.color + '44'">
+          <div
+            class="inline-block text-[0.65rem] font-bold px-[9px] py-[2px] rounded-[10px] mb-1.5"
+            [style.color]="c.text_color"
+            [style.background]="c.color + '44'"
+          >
             Cluster {{ c.cluster_id }}
           </div>
-          <div class="text-[0.975rem] font-bold mb-[3px]" [style.color]="c.text_color">{{ c.label }}</div>
+          <div class="text-[0.975rem] font-bold mb-[3px]" [style.color]="c.text_color">
+            {{ c.label }}
+          </div>
           <div class="text-[0.75rem]" [style.color]="c.text_color + 'aa'">
             {{ c.count }} students · {{ (c.percentage * 100).toFixed(0) }}%
           </div>
@@ -536,60 +1058,127 @@
             <span>Avg. absence</span>
             <div class="flex items-center gap-1.5">
               <div class="w-[60px] bg-slate-100 rounded-[3px] h-1">
-                <div class="h-1 rounded-[3px]" [style.width.%]="c.avg_absence_pct" [style.background]="c.color"></div>
+                <div
+                  class="h-1 rounded-[3px]"
+                  [style.width.%]="c.avg_absence_pct"
+                  [style.background]="c.color"
+                ></div>
               </div>
               <span [style.color]="c.color">{{ c.avg_absence_pct.toFixed(1) }}%</span>
             </div>
           </div>
-          <div class="flex justify-between text-[0.75rem] text-slate-500"><span>Avg. final note</span><strong [style.color]="c.color">{{ c.avg_note.toFixed(1) }} / 20</strong></div>
-          <div class="flex justify-between text-[0.75rem] text-slate-500"><span>Payment delay</span><strong class="text-slate-800">{{ c.avg_retard_days.toFixed(0) }} days</strong></div>
-          <div class="flex justify-between text-[0.75rem] text-slate-500"><span>Dropout rate</span><strong [style.color]="c.dropout_rate > 0.4 ? '#DC2626' : '#16A34A'">{{ (c.dropout_rate * 100).toFixed(0) }}%</strong></div>
-          <div class="flex justify-between text-[0.75rem] text-slate-500"><span>Payment risk</span><strong [style.color]="c.payment_risk_rate > 0.4 ? '#DC2626' : '#16A34A'">{{ (c.payment_risk_rate * 100).toFixed(0) }}%</strong></div>
+          <div class="flex justify-between text-[0.75rem] text-slate-500">
+            <span>Avg. final note</span
+            ><strong [style.color]="c.color">{{ c.avg_note.toFixed(1) }} / 20</strong>
+          </div>
+          <div class="flex justify-between text-[0.75rem] text-slate-500">
+            <span>Payment delay</span
+            ><strong class="text-slate-800">{{ c.avg_retard_days.toFixed(0) }} days</strong>
+          </div>
+          <div class="flex justify-between text-[0.75rem] text-slate-500">
+            <span>Dropout rate</span
+            ><strong [style.color]="c.dropout_rate > 0.4 ? '#DC2626' : '#16A34A'"
+              >{{ (c.dropout_rate * 100).toFixed(0) }}%</strong
+            >
+          </div>
+          <div class="flex justify-between text-[0.75rem] text-slate-500">
+            <span>Payment risk</span
+            ><strong [style.color]="c.payment_risk_rate > 0.4 ? '#DC2626' : '#16A34A'"
+              >{{ (c.payment_risk_rate * 100).toFixed(0) }}%</strong
+            >
+          </div>
         </div>
       </div>
     </div>
 
     <!-- PCA scatter plot -->
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mt-3">
-      <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5 flex items-center gap-2.5">
+      <div
+        class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5 flex items-center gap-2.5"
+      >
         PCA 2D projection — student clusters
-        <span *ngIf="dso3PcaData" class="text-[0.7rem] font-normal normal-case tracking-normal text-slate-400">
-          PC1 {{ (dso3PcaData.variance_explained[0] * 100).toFixed(1) }}% ·
-          PC2 {{ (dso3PcaData.variance_explained[1] * 100).toFixed(1) }}% ·
-          silhouette {{ dso3PcaData.silhouette_score }}
+        <span
+          *ngIf="dso3PcaData"
+          class="text-[0.7rem] font-normal normal-case tracking-normal text-slate-400"
+        >
+          PC1 {{ (dso3PcaData.variance_explained[0] * 100).toFixed(1) }}% · PC2
+          {{ (dso3PcaData.variance_explained[1] * 100).toFixed(1) }}% · silhouette
+          {{ dso3PcaData.silhouette_score }}
         </span>
       </div>
       <div>
-        <svg [attr.viewBox]="'0 0 ' + SVG_W + ' ' + SVG_H" class="w-full border border-slate-100 rounded-lg bg-slate-50">
+        <svg
+          [attr.viewBox]="'0 0 ' + SVG_W + ' ' + SVG_H"
+          class="w-full border border-slate-100 rounded-lg bg-slate-50"
+        >
           <!-- Axes -->
-          <line [attr.x1]="SVG_PAD" [attr.y1]="SVG_H/2" [attr.x2]="SVG_W - SVG_PAD" [attr.y2]="SVG_H/2"
-                stroke="#e2e8f0" stroke-width="1"/>
-          <line [attr.x1]="SVG_W/2" [attr.y1]="SVG_PAD" [attr.x2]="SVG_W/2" [attr.y2]="SVG_H - SVG_PAD"
-                stroke="#e2e8f0" stroke-width="1"/>
+          <line
+            [attr.x1]="SVG_PAD"
+            [attr.y1]="SVG_H / 2"
+            [attr.x2]="SVG_W - SVG_PAD"
+            [attr.y2]="SVG_H / 2"
+            stroke="#e2e8f0"
+            stroke-width="1"
+          />
+          <line
+            [attr.x1]="SVG_W / 2"
+            [attr.y1]="SVG_PAD"
+            [attr.x2]="SVG_W / 2"
+            [attr.y2]="SVG_H - SVG_PAD"
+            stroke="#e2e8f0"
+            stroke-width="1"
+          />
           <!-- Points -->
-          <circle *ngFor="let p of pcaPoints"
-            [attr.cx]="p.sx" [attr.cy]="p.sy" r="4"
-            [attr.fill]="clusterColor(p.cluster)" fill-opacity="0.65">
+          <circle
+            *ngFor="let p of pcaPoints"
+            [attr.cx]="p.sx"
+            [attr.cy]="p.sy"
+            r="4"
+            [attr.fill]="clusterColor(p.cluster)"
+            fill-opacity="0.65"
+          >
             <title>{{ p.name }}</title>
           </circle>
           <!-- Centroids (diamond) -->
-          <rect *ngFor="let c of pcaCentroids"
-            [attr.x]="c.sx - 6" [attr.y]="c.sy - 6" width="12" height="12"
+          <rect
+            *ngFor="let c of pcaCentroids"
+            [attr.x]="c.sx - 6"
+            [attr.y]="c.sy - 6"
+            width="12"
+            height="12"
             [attr.fill]="clusterColor(c.cluster)"
-            stroke="white" stroke-width="2"
-            [attr.transform]="'rotate(45,' + c.sx + ',' + c.sy + ')'">
-          </rect>
+            stroke="white"
+            stroke-width="2"
+            [attr.transform]="'rotate(45,' + c.sx + ',' + c.sy + ')'"
+          ></rect>
           <!-- Axis labels -->
-          <text [attr.x]="SVG_W - SVG_PAD - 4" [attr.y]="SVG_H/2 - 6" font-size="10" fill="#94a3b8" text-anchor="end">PC1</text>
-          <text [attr.x]="SVG_W/2 + 6" [attr.y]="SVG_PAD + 10" font-size="10" fill="#94a3b8">PC2</text>
+          <text
+            [attr.x]="SVG_W - SVG_PAD - 4"
+            [attr.y]="SVG_H / 2 - 6"
+            font-size="10"
+            fill="#94a3b8"
+            text-anchor="end"
+          >
+            PC1
+          </text>
+          <text [attr.x]="SVG_W / 2 + 6" [attr.y]="SVG_PAD + 10" font-size="10" fill="#94a3b8">
+            PC2
+          </text>
         </svg>
         <div class="flex gap-4 flex-wrap mt-2.5">
-          <div *ngFor="let c of dso3Clusters" class="flex items-center gap-1.5 text-[0.75rem] text-slate-500">
-            <div class="w-[10px] h-[10px] rounded-full flex-shrink-0" [style.background]="c.color"></div>
+          <div
+            *ngFor="let c of dso3Clusters"
+            class="flex items-center gap-1.5 text-[0.75rem] text-slate-500"
+          >
+            <div
+              class="w-[10px] h-[10px] rounded-full flex-shrink-0"
+              [style.background]="c.color"
+            ></div>
             <span>Cluster {{ c.cluster_id }} — {{ c.label }}</span>
           </div>
           <div class="flex items-center gap-1.5 text-[0.75rem] text-slate-500">
-            <div class="w-[10px] h-[10px] bg-slate-400 rounded-[2px] rotate-45 flex-shrink-0"></div><span>Centroid</span>
+            <div class="w-[10px] h-[10px] bg-slate-400 rounded-[2px] rotate-45 flex-shrink-0"></div>
+            <span>Centroid</span>
           </div>
         </div>
       </div>
@@ -599,59 +1188,156 @@
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mt-3">
       <div class="flex justify-between items-center flex-wrap gap-2 mb-3.5">
         <div class="flex gap-1.5 flex-wrap">
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso3ClusterFilter === 'all'" (click)="dso3ClusterFilter='all'; applyDso3Filters()">All</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso3ClusterFilter === '0'" (click)="dso3ClusterFilter='0'; applyDso3Filters()">Excellent</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso3ClusterFilter === '1'" (click)="dso3ClusterFilter='1'; applyDso3Filters()">Average</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso3ClusterFilter === '2'" (click)="dso3ClusterFilter='2'; applyDso3Filters()">At risk</button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso3ClusterFilter === 'all'"
+            (click)="dso3ClusterFilter = 'all'; applyDso3Filters()"
+          >
+            All
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso3ClusterFilter === '0'"
+            (click)="dso3ClusterFilter = '0'; applyDso3Filters()"
+          >
+            Excellent
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso3ClusterFilter === '1'"
+            (click)="dso3ClusterFilter = '1'; applyDso3Filters()"
+          >
+            Average
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso3ClusterFilter === '2'"
+            (click)="dso3ClusterFilter = '2'; applyDso3Filters()"
+          >
+            At risk
+          </button>
         </div>
         <div class="flex gap-1.5 items-center flex-wrap">
-          <select class="px-[10px] py-[6px] border border-slate-200 rounded-lg bg-white text-slate-700 text-[0.8125rem] cursor-pointer" [(ngModel)]="dso3LevelFilter" (change)="applyDso3Filters()">
+          <select
+            class="px-[10px] py-[6px] border border-slate-200 rounded-lg bg-white text-slate-700 text-[0.8125rem] cursor-pointer"
+            [(ngModel)]="dso3LevelFilter"
+            (change)="applyDso3Filters()"
+          >
             <option value="all">All levels</option>
-            <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
+            <option>L1</option>
+            <option>L2</option>
+            <option>L3</option>
+            <option>M1</option>
+            <option>M2</option>
           </select>
-          <input class="px-[10px] py-[6px] border border-slate-200 rounded-lg text-[0.8125rem] text-slate-700 w-[180px] outline-none focus:border-[#5F2DED]" placeholder="Search student…" [(ngModel)]="dso3Search" (input)="applyDso3Filters()" />
+          <input
+            class="px-[10px] py-[6px] border border-slate-200 rounded-lg text-[0.8125rem] text-slate-700 w-[180px] outline-none focus:border-[#5F2DED]"
+            placeholder="Search student…"
+            [(ngModel)]="dso3Search"
+            (input)="applyDso3Filters()"
+          />
         </div>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[0.8125rem]">
-          <thead><tr>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Student</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Level</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Cluster</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Absence</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Avg. note</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Payment delay</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">PC1</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">PC2</th>
-          </tr></thead>
+          <thead>
+            <tr>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Student
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Level
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Cluster
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Absence
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Avg. note
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Payment delay
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                PC1
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                PC2
+              </th>
+            </tr>
+          </thead>
           <tbody>
             <tr *ngFor="let s of dso3Students" class="hover:bg-slate-50">
               <td class="p-[10px] border-b border-slate-50 align-middle">
                 <div class="flex items-center gap-[9px]">
-                  <div class="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[0.6875rem] font-bold flex-shrink-0" [style.background]="s.avatar_color + '22'" [style.color]="s.avatar_color">{{ s.initials }}</div>
+                  <div
+                    class="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[0.6875rem] font-bold flex-shrink-0"
+                    [style.background]="s.avatar_color + '22'"
+                    [style.color]="s.avatar_color"
+                  >
+                    {{ s.initials }}
+                  </div>
                   <div>
                     <div class="font-semibold text-slate-800 text-[0.8125rem]">{{ s.name }}</div>
                     <div class="text-[0.7rem] text-slate-400">{{ s.email }}</div>
                   </div>
                 </div>
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">{{ s.level }}</td>
+              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">
+                {{ s.level }}
+              </td>
               <td class="p-[10px] border-b border-slate-50 align-middle">
-                <span class="inline-block text-[0.7rem] font-semibold px-[10px] py-[3px] rounded-lg"
+                <span
+                  class="inline-block text-[0.7rem] font-semibold px-[10px] py-[3px] rounded-lg"
                   [style.background]="s.cluster_bg"
-                  [style.color]="s.cluster_text">
+                  [style.color]="s.cluster_text"
+                >
                   {{ s.cluster_label }}
                 </span>
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">{{ s.absence_pct }}</td>
-              <td class="p-[10px] border-b border-slate-50 align-middle font-mono text-[0.75rem]">{{ s.note }}</td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">{{ s.retard_jours }}</td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-[0.75rem] font-mono text-slate-500">{{ s.pc1 }}</td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-[0.75rem] font-mono text-slate-500">{{ s.pc2 }}</td>
+              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">
+                {{ s.absence_pct }}
+              </td>
+              <td class="p-[10px] border-b border-slate-50 align-middle font-mono text-[0.75rem]">
+                {{ s.note }}
+              </td>
+              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">
+                {{ s.retard_jours }}
+              </td>
+              <td
+                class="p-[10px] border-b border-slate-50 align-middle text-[0.75rem] font-mono text-slate-500"
+              >
+                {{ s.pc1 }}
+              </td>
+              <td
+                class="p-[10px] border-b border-slate-50 align-middle text-[0.75rem] font-mono text-slate-500"
+              >
+                {{ s.pc2 }}
+              </td>
             </tr>
             <tr *ngIf="!dso3Students.length">
-              <td colspan="8" class="text-center text-slate-400 py-6 text-[0.8125rem]">No students match the current filters</td>
+              <td colspan="8" class="text-center text-slate-400 py-6 text-[0.8125rem]">
+                No students match the current filters
+              </td>
             </tr>
           </tbody>
         </table>
@@ -663,63 +1349,117 @@
   <!-- TAB 4 — PAYMENT RISK (DSO4)                                            -->
   <!-- ════════════════════════════════════════════════════════════════════════ -->
   <div *ngIf="activeTab === 'dso4' && !loading && !datasetNeeded">
-
     <!-- KPI cards -->
     <div *ngIf="dso4Summary" class="grid grid-cols-4 gap-3">
       <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
-        <div class="text-3xl font-semibold leading-none mb-[5px] text-red-600">{{ dso4Summary.high_risk_count }}</div>
-        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">High payment risk</div>
+        <div class="text-3xl font-semibold leading-none mb-[5px] text-red-600">
+          {{ dso4Summary.high_risk_count }}
+        </div>
+        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">
+          High payment risk
+        </div>
         <div class="text-[0.75rem] mt-[5px] text-slate-400">Risk score ≥ 70%</div>
       </div>
       <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
-        <div class="text-3xl font-semibold leading-none mb-[5px] text-amber-600">{{ dso4Summary.overdue_total_tnd | number:'1.0-0' }} TND</div>
-        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">Total overdue amount</div>
-        <div class="text-[0.75rem] mt-[5px] text-slate-400">avg delay {{ dso4Summary.avg_delay_days }} days</div>
+        <div class="text-3xl font-semibold leading-none mb-[5px] text-amber-600">
+          {{ dso4Summary.overdue_total_tnd | number: '1.0-0' }} TND
+        </div>
+        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">
+          Total overdue amount
+        </div>
+        <div class="text-[0.75rem] mt-[5px] text-slate-400">
+          avg delay {{ dso4Summary.avg_delay_days }} days
+        </div>
       </div>
       <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
-        <div class="text-3xl font-semibold leading-none mb-[5px] text-red-600">{{ dso4Summary.overdue_60_days_count }}</div>
-        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">Overdue &gt; 60 days</div>
+        <div class="text-3xl font-semibold leading-none mb-[5px] text-red-600">
+          {{ dso4Summary.overdue_60_days_count }}
+        </div>
+        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">
+          Overdue &gt; 60 days
+        </div>
         <div class="text-[0.75rem] mt-[5px] text-slate-400">Escalate now</div>
       </div>
       <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm">
-        <div class="text-3xl font-semibold leading-none mb-[5px] text-emerald-600">{{ (dso4Summary.collection_rate * 100).toFixed(0) }}%</div>
-        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">Collection rate</div>
-        <div class="text-[0.75rem] mt-[5px] text-slate-400">{{ dso4Summary.total_overdue_students }} students overdue</div>
+        <div class="text-3xl font-semibold leading-none mb-[5px] text-emerald-600">
+          {{ (dso4Summary.collection_rate * 100).toFixed(0) }}%
+        </div>
+        <div class="text-[0.7rem] font-semibold uppercase tracking-[0.06em] text-slate-500">
+          Collection rate
+        </div>
+        <div class="text-[0.75rem] mt-[5px] text-slate-400">
+          {{ dso4Summary.total_overdue_students }} students overdue
+        </div>
       </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3" *ngIf="dso4Summary">
-
       <!-- Donut chart -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5">Risk distribution</div>
+        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5">
+          Risk distribution
+        </div>
         <div class="flex items-center gap-5 flex-wrap">
           <svg viewBox="0 0 120 120" class="w-[130px] flex-shrink-0">
-            <circle cx="60" cy="60" [attr.r]="DONUT_R" fill="none" stroke="#e2e8f0" stroke-width="16"/>
-            <circle *ngFor="let seg of donutSegments"
-              cx="60" cy="60" [attr.r]="DONUT_R" fill="none"
-              [attr.stroke]="seg.color" stroke-width="16"
+            <circle
+              cx="60"
+              cy="60"
+              [attr.r]="DONUT_R"
+              fill="none"
+              stroke="#e2e8f0"
+              stroke-width="16"
+            />
+            <circle
+              *ngFor="let seg of donutSegments"
+              cx="60"
+              cy="60"
+              [attr.r]="DONUT_R"
+              fill="none"
+              [attr.stroke]="seg.color"
+              stroke-width="16"
               [attr.stroke-dasharray]="seg.dash"
               [attr.stroke-dashoffset]="seg.offset"
-              transform="rotate(-90 60 60)"/>
-            <text x="60" y="56" text-anchor="middle" font-size="14" font-weight="600" fill="#1e293b">{{ dso4Summary.total_students }}</text>
+              transform="rotate(-90 60 60)"
+            />
+            <text
+              x="60"
+              y="56"
+              text-anchor="middle"
+              font-size="14"
+              font-weight="600"
+              fill="#1e293b"
+            >
+              {{ dso4Summary.total_students }}
+            </text>
             <text x="60" y="68" text-anchor="middle" font-size="8" fill="#94a3b8">students</text>
           </svg>
           <div class="flex flex-col gap-2.5">
             <div class="flex items-center gap-2 text-[0.8rem] text-slate-500">
               <div class="w-2 h-2 rounded-full bg-[#D85A30] flex-shrink-0"></div>
               <span>High risk</span>
-              <strong class="pl-3 text-slate-800 text-[0.8rem]">{{ dso4Summary.high_risk_count }} ({{ (dso4Summary.donut.high.percentage * 100).toFixed(0) }}%)</strong>
+              <strong class="pl-3 text-slate-800 text-[0.8rem]"
+                >{{ dso4Summary.high_risk_count }} ({{
+                  (dso4Summary.donut.high.percentage * 100).toFixed(0)
+                }}%)</strong
+              >
             </div>
             <div class="flex items-center gap-2 text-[0.8rem] text-slate-500">
               <div class="w-2 h-2 rounded-full bg-[#BA7517] flex-shrink-0"></div>
               <span>Medium risk</span>
-              <strong class="pl-3 text-slate-800 text-[0.8rem]">{{ dso4Summary.medium_risk_count }} ({{ (dso4Summary.donut.medium.percentage * 100).toFixed(0) }}%)</strong>
+              <strong class="pl-3 text-slate-800 text-[0.8rem]"
+                >{{ dso4Summary.medium_risk_count }} ({{
+                  (dso4Summary.donut.medium.percentage * 100).toFixed(0)
+                }}%)</strong
+              >
             </div>
             <div class="flex items-center gap-2 text-[0.8rem] text-slate-500">
               <div class="w-2 h-2 rounded-full bg-[#1D9E75] flex-shrink-0"></div>
               <span>Low / none</span>
-              <strong class="pl-3 text-slate-800 text-[0.8rem]">{{ dso4Summary.low_risk_count }} ({{ (dso4Summary.donut.low.percentage * 100).toFixed(0) }}%)</strong>
+              <strong class="pl-3 text-slate-800 text-[0.8rem]"
+                >{{ dso4Summary.low_risk_count }} ({{
+                  (dso4Summary.donut.low.percentage * 100).toFixed(0)
+                }}%)</strong
+              >
             </div>
           </div>
         </div>
@@ -727,19 +1467,31 @@
 
       <!-- Aging buckets -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5">Debt aging</div>
+        <div class="text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500 mb-3.5">
+          Debt aging
+        </div>
         <div class="flex flex-col gap-[10px] mb-3.5">
           <div *ngFor="let b of agingBars" class="flex items-center gap-2.5">
-            <span class="text-[0.75rem] text-slate-500 w-[80px] flex-shrink-0">{{ b.range }} days</span>
+            <span class="text-[0.75rem] text-slate-500 w-[80px] flex-shrink-0"
+              >{{ b.range }} days</span
+            >
             <div class="flex-1 bg-slate-100 rounded-[3px] h-[7px]">
-              <div class="h-[7px] rounded-[3px] transition-width duration-300" [style.width.%]="b.pct" [style.background]="b.color"></div>
+              <div
+                class="h-[7px] rounded-[3px] transition-width duration-300"
+                [style.width.%]="b.pct"
+                [style.background]="b.color"
+              ></div>
             </div>
             <span class="text-[0.75rem] text-slate-500 w-6 text-right">{{ b.count }}</span>
           </div>
         </div>
         <div class="text-[0.75rem] text-slate-500 pt-[10px] border-t border-slate-100">
-          Total overdue: <strong class="text-slate-800">{{ dso4Summary.total_overdue_students }} students</strong> ·
-          <strong class="text-red-600">{{ dso4Summary.overdue_total_tnd | number:'1.0-0' }} TND</strong>
+          Total overdue:
+          <strong class="text-slate-800">{{ dso4Summary.total_overdue_students }} students</strong>
+          ·
+          <strong class="text-red-600"
+            >{{ dso4Summary.overdue_total_tnd | number: '1.0-0' }} TND</strong
+          >
         </div>
       </div>
     </div>
@@ -748,74 +1500,192 @@
     <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mt-3">
       <div class="flex justify-between items-center flex-wrap gap-2 mb-3.5">
         <div class="flex gap-1.5 flex-wrap">
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso4RiskFilter === 'all'" (click)="dso4RiskFilter='all'; applyDso4Filters()">All</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso4RiskFilter === 'high'" (click)="dso4RiskFilter='high'; applyDso4Filters()">High risk</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso4RiskFilter === 'medium'" (click)="dso4RiskFilter='medium'; applyDso4Filters()">Medium</button>
-          <button class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50" [class.!bg-slate-900 !text-white !border-transparent]="dso4RiskFilter === 'low'" (click)="dso4RiskFilter='low'; applyDso4Filters()">Low / OK</button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso4RiskFilter === 'all'"
+            (click)="dso4RiskFilter = 'all'; applyDso4Filters()"
+          >
+            All
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso4RiskFilter === 'high'"
+            (click)="dso4RiskFilter = 'high'; applyDso4Filters()"
+          >
+            High risk
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso4RiskFilter === 'medium'"
+            (click)="dso4RiskFilter = 'medium'; applyDso4Filters()"
+          >
+            Medium
+          </button>
+          <button
+            class="text-[0.75rem] px-[12px] py-[5px] rounded-full border border-slate-200 bg-none cursor-pointer text-slate-500 font-medium transition-all duration-150 hover:bg-slate-50"
+            [class.!bg-slate-900 !text-white !border-transparent]="dso4RiskFilter === 'low'"
+            (click)="dso4RiskFilter = 'low'; applyDso4Filters()"
+          >
+            Low / OK
+          </button>
         </div>
         <div class="flex gap-1.5 items-center flex-wrap">
-          <select class="px-[10px] py-[6px] border border-slate-200 rounded-lg bg-white text-slate-700 text-[0.8125rem] cursor-pointer" [(ngModel)]="dso4LevelFilter" (change)="applyDso4Filters()">
+          <select
+            class="px-[10px] py-[6px] border border-slate-200 rounded-lg bg-white text-slate-700 text-[0.8125rem] cursor-pointer"
+            [(ngModel)]="dso4LevelFilter"
+            (change)="applyDso4Filters()"
+          >
             <option value="all">All levels</option>
-            <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
+            <option>L1</option>
+            <option>L2</option>
+            <option>L3</option>
+            <option>M1</option>
+            <option>M2</option>
           </select>
-          <input class="px-[10px] py-[6px] border border-slate-200 rounded-lg text-[0.8125rem] text-slate-700 w-[180px] outline-none focus:border-[#5F2DED]" placeholder="Search student…" [(ngModel)]="dso4Search" (input)="applyDso4Filters()" />
-          <button class="px-[14px] py-[6px] border border-red-600 rounded-lg bg-none text-red-600 text-[0.75rem] font-semibold cursor-pointer transition-all duration-150 hover:bg-red-50" (click)="exportCsv()">Export overdue CSV</button>
+          <input
+            class="px-[10px] py-[6px] border border-slate-200 rounded-lg text-[0.8125rem] text-slate-700 w-[180px] outline-none focus:border-[#5F2DED]"
+            placeholder="Search student…"
+            [(ngModel)]="dso4Search"
+            (input)="applyDso4Filters()"
+          />
+          <button
+            class="px-[14px] py-[6px] border border-red-600 rounded-lg bg-none text-red-600 text-[0.75rem] font-semibold cursor-pointer transition-all duration-150 hover:bg-red-50"
+            (click)="exportCsv()"
+          >
+            Export overdue CSV
+          </button>
         </div>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full border-collapse text-[0.8125rem]">
-          <thead><tr>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Student</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Level</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Risk score</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Risk level</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Overdue (TND)</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Delay (days)</th>
-            <th class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100">Last payment</th>
-          </tr></thead>
+          <thead>
+            <tr>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Student
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Level
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Risk score
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Risk level
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Overdue (TND)
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Delay (days)
+              </th>
+              <th
+                class="text-left text-[0.7rem] font-semibold uppercase tracking-[0.04em] text-slate-400 p-[10px] border-b border-slate-100"
+              >
+                Last payment
+              </th>
+            </tr>
+          </thead>
           <tbody>
             <tr *ngFor="let s of dso4Students" class="hover:bg-slate-50">
               <td class="p-[10px] border-b border-slate-50 align-middle">
                 <div class="flex items-center gap-[9px]">
-                  <div class="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[0.6875rem] font-bold flex-shrink-0" [style.background]="s.avatar_color + '22'" [style.color]="s.avatar_color">{{ s.initials }}</div>
+                  <div
+                    class="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[0.6875rem] font-bold flex-shrink-0"
+                    [style.background]="s.avatar_color + '22'"
+                    [style.color]="s.avatar_color"
+                  >
+                    {{ s.initials }}
+                  </div>
                   <div>
                     <div class="font-semibold text-slate-800 text-[0.8125rem]">{{ s.name }}</div>
                     <div class="text-[0.7rem] text-slate-400">{{ s.email }}</div>
                   </div>
                 </div>
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">{{ s.level }}</td>
+              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500">
+                {{ s.level }}
+              </td>
               <td class="p-[10px] border-b border-slate-50 align-middle">
                 <div class="flex items-center gap-[7px]">
                   <div class="flex-1 bg-slate-100 rounded-[3px] h-1.5 min-w-[70px]">
-                    <div class="h-1.5 rounded-[3px] transition-width duration-300"
+                    <div
+                      class="h-1.5 rounded-[3px] transition-width duration-300"
                       [style.width.%]="s.risk_score * 100"
-                      [style.background]="s.risk_score >= 0.7 ? '#DC2626' : s.risk_score >= 0.45 ? '#D97706' : '#16A34A'">
-                    </div>
+                      [style.background]="
+                        s.risk_score >= 0.7
+                          ? '#DC2626'
+                          : s.risk_score >= 0.45
+                            ? '#D97706'
+                            : '#16A34A'
+                      "
+                    ></div>
                   </div>
-                  <span class="font-semibold text-[0.8rem] w-8 flex-shrink-0"
-                    [style.color]="s.risk_score >= 0.7 ? '#DC2626' : s.risk_score >= 0.45 ? '#D97706' : '#16A34A'">
+                  <span
+                    class="font-semibold text-[0.8rem] w-8 flex-shrink-0"
+                    [style.color]="
+                      s.risk_score >= 0.7 ? '#DC2626' : s.risk_score >= 0.45 ? '#D97706' : '#16A34A'
+                    "
+                  >
                     {{ (s.risk_score * 100).toFixed(0) }}%
                   </span>
                 </div>
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle"><span class="inline-block text-[0.65rem] font-bold px-[9px] py-[3px] rounded-[10px] capitalize" [ngClass]="riskBadgeClass(s.risk_level)" [class.bg-red-50!]="riskBadgeClass(s.risk_level).includes('critical')" [class.text-red-800!]="riskBadgeClass(s.risk_level).includes('critical')" [class.bg-amber-50!]="riskBadgeClass(s.risk_level).includes('high')" [class.text-amber-800!]="riskBadgeClass(s.risk_level).includes('high')" [class.bg-orange-50!]="riskBadgeClass(s.risk_level).includes('moderate')" [class.text-orange-800!]="riskBadgeClass(s.risk_level).includes('moderate')" [class.bg-green-50!]="riskBadgeClass(s.risk_level).includes('low')" [class.text-green-800!]="riskBadgeClass(s.risk_level).includes('low')">{{ s.risk_level | titlecase }}</span></td>
-              <td class="p-[10px] border-b border-slate-50 align-middle font-medium" [style.color]="s.overdue_tnd > 0 ? '#DC2626' : '#16A34A'">
-                {{ s.overdue_tnd > 0 ? (s.overdue_tnd | number:'1.0-0') + ' TND' : 'Paid' }}
+              <td class="p-[10px] border-b border-slate-50 align-middle">
+                <span
+                  class="inline-block text-[0.65rem] font-bold px-[9px] py-[3px] rounded-[10px] capitalize"
+                  [ngClass]="riskBadgeClass(s.risk_level)"
+                  [class.bg-red-50!]="riskBadgeClass(s.risk_level).includes('critical')"
+                  [class.text-red-800!]="riskBadgeClass(s.risk_level).includes('critical')"
+                  [class.bg-amber-50!]="riskBadgeClass(s.risk_level).includes('high')"
+                  [class.text-amber-800!]="riskBadgeClass(s.risk_level).includes('high')"
+                  [class.bg-orange-50!]="riskBadgeClass(s.risk_level).includes('moderate')"
+                  [class.text-orange-800!]="riskBadgeClass(s.risk_level).includes('moderate')"
+                  [class.bg-green-50!]="riskBadgeClass(s.risk_level).includes('low')"
+                  [class.text-green-800!]="riskBadgeClass(s.risk_level).includes('low')"
+                  >{{ s.risk_level | titlecase }}</span
+                >
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500" [style.color]="s.delay_days > 30 ? '#DC2626' : s.delay_days > 0 ? '#D97706' : '#16A34A'">
+              <td
+                class="p-[10px] border-b border-slate-50 align-middle font-medium"
+                [style.color]="s.overdue_tnd > 0 ? '#DC2626' : '#16A34A'"
+              >
+                {{ s.overdue_tnd > 0 ? (s.overdue_tnd | number: '1.0-0') + ' TND' : 'Paid' }}
+              </td>
+              <td
+                class="p-[10px] border-b border-slate-50 align-middle text-slate-500"
+                [style.color]="
+                  s.delay_days > 30 ? '#DC2626' : s.delay_days > 0 ? '#D97706' : '#16A34A'
+                "
+              >
                 {{ s.delay_days > 0 ? s.delay_days + ' days' : '—' }}
               </td>
-              <td class="p-[10px] border-b border-slate-50 align-middle text-slate-500 text-[0.75rem]">{{ s.last_payment_date || '—' }}</td>
+              <td
+                class="p-[10px] border-b border-slate-50 align-middle text-slate-500 text-[0.75rem]"
+              >
+                {{ s.last_payment_date || '—' }}
+              </td>
             </tr>
             <tr *ngIf="!dso4Students.length">
-              <td colspan="7" class="text-center text-slate-400 py-6 text-[0.8125rem]">No students match the current filters</td>
+              <td colspan="7" class="text-center text-slate-400 py-6 text-[0.8125rem]">
+                No students match the current filters
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
-
 </div>
