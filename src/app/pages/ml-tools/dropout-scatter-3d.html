@@ -1,0 +1,33 @@
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mt-3">
+
+  <!-- Title row -->
+  <div class="mb-1 text-[0.75rem] font-semibold uppercase tracking-[0.05em] text-slate-500">
+    3D DECISION SPACE · Absence × Grade × Dropout Probability
+  </div>
+  <div class="text-[0.7rem] text-slate-400 mb-3.5">
+    Drag to rotate · hover for student detail · decision boundary at P&nbsp;=&nbsp;0.50
+  </div>
+
+  <!-- Loading state -->
+  <div *ngIf="loading"
+       class="flex items-center justify-center gap-2 text-slate-400 text-[0.8125rem]"
+       style="height:520px">
+    <div class="w-4 h-4 border-2 border-slate-300 border-t-[#5F2DED] rounded-full animate-spin"></div>
+    Loading 3D chart…
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="!loading && !students.length"
+       class="flex items-center justify-center text-slate-400 text-[0.8125rem]"
+       style="height:520px">
+    No student data available
+  </div>
+
+  <!-- Plot container -->
+  <div *ngIf="hasData"
+       #plotContainer
+       style="height:520px;width:100%"
+       (mousedown)="onInteraction()">
+  </div>
+
+</div>

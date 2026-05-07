@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MlService } from '../../services/ml.service';
+import { DropoutScatter3dComponent } from './dropout-scatter-3d';
 import { catchError, forkJoin, of } from 'rxjs';
 
 type Tab = 'dso1' | 'dso2' | 'dso3' | 'dso4';
@@ -9,7 +10,7 @@ type Tab = 'dso1' | 'dso2' | 'dso3' | 'dso4';
 @Component({
   selector: 'app-ml-tools',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DropoutScatter3dComponent],
   templateUrl: './ml-tools.html',
 })
 export class MlTools implements OnInit {

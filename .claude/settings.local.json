@@ -13,7 +13,11 @@
       "Bash(grep -E \"\\\\.java$|\\\\.properties$|\\\\.yml$\")",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(Get-ChildItem -Path \"d:\\\\PI 4 SAE INTEGRATION\\\\FrontEnd\" -Recurse -Force)",
+      "Bash(Select-Object FullName)",
+      "Bash(Head -20)",
+      "Bash(npm install *)"
     ]
   }
 }
