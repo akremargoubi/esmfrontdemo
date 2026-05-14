@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
+import { MOCK_ASSESSMENTS } from '../core/mock/mock-data';
 
 export interface Assessment {
   id?: number;
@@ -9,50 +9,46 @@ export interface Assessment {
   courseName: string;
   type: string;
   status: string;
-  className?: string;   // 🆕 groupe d'étudiants ciblé
+  className?: string;
   startDate?: string;
   endDate?: string;
   duration?: number;
 }
 
+let _assessments: Assessment[] = [...MOCK_ASSESSMENTS];
+
 @Injectable({ providedIn: 'root' })
 export class AssessmentService {
 
-  private assessmentsUrl = `${environment.apiUrl}/api/assessments`;
-  private enumsUrl = `${environment.apiUrl}/api/enums`;
-
-  constructor(private http: HttpClient) { }
-
   getAll(): Observable<Assessment[]> {
-    return this.http.get<Assessment[]>(this.assessmentsUrl);
+    return of([..._assessments]).pipe(delay(250));
   }
 
   getById(id: number): Observable<Assessment> {
-    return this.http.get<Assessment>(`${this.assessmentsUrl}/${id}`);
+    return of(_assessments.find(a => a.id === id) ?? _assessments[0]).pipe(delay(200));
   }
 
-  // 🆕 Récupère les assessments d'une classe spécifique (pour le dashboard étudiant)
   getByClassName(className: string): Observable<Assessment[]> {
-    return this.http.get<Assessment[]>(`${this.assessmentsUrl}/class/${className}`);
+    return of(_assessments.filter(a => a.className === className)).pipe(delay(200));
   }
 
-  create(assessment: Assessment): Observable<Assessment> {
-    return this.http.post<Assessment>(this.assessmentsUrl, assessment);
+  create(a: Assessment): Observable<Assessment> {
+    const created = { ...a, id: Math.max(0, ..._assessments.map(x => x.id ?? 0)) + 1 };
+    _assessments = [..._assessments, created];
+    return of(created).pipe(delay(400));
   }
 
-  update(id: number, assessment: Assessment): Observable<Assessment> {
-    return this.http.put<Assessment>(`${this.assessmentsUrl}/${id}`, assessment);
+  update(id: number, a: Assessment): Observable<Assessment> {
+    const updated = { ...a, id };
+    _assessments = _assessments.map(x => x.id === id ? updated : x);
+    return of(updated).pipe(delay(400));
   }
 
-  delete(id: number): Observable<any> {
-    return this.http.delete(`${this.assessmentsUrl}/${id}`, { observe: 'response' });
+  delete(id: number): Observable<{ status: number }> {
+    _assessments = _assessments.filter(x => x.id !== id);
+    return of({ status: 204 }).pipe(delay(300));
   }
 
-  getTypes(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.enumsUrl}/types`);
-  }
-
-  getStatuses(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.enumsUrl}/statuses`);
-  }
+  getTypes(): Observable<string[]> { return of(['EXAM', 'QUIZ', 'PROJECT']); }
+  getStatuses(): Observable<string[]> { return of(['DRAFT', 'PUBLISHED', 'CLOSED']); }
 }

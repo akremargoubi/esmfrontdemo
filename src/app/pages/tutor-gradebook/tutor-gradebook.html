@@ -1,0 +1,164 @@
+<div class="gb-page">
+
+  <!-- ── Header ────────────────────────────────────────────────────── -->
+  <div class="gb-header">
+    <div>
+      <h1 class="gb-title">Grade Book</h1>
+      <p class="gb-sub">Click any cell to enter or edit a grade</p>
+    </div>
+    <div class="gb-header-actions">
+      <select class="gb-class-select" [(ngModel)]="selectedClass" (change)="onClassChange()">
+        @for (c of myClasses; track c.id) {
+          <option [value]="c.name">{{ c.name }} — {{ c.specialty }}</option>
+        }
+      </select>
+      <button class="gb-btn-secondary" (click)="showBulkGrading = !showBulkGrading">
+        <mat-icon>select_all</mat-icon> Bulk
+      </button>
+      <button class="gb-btn-primary" (click)="saveAll()" [disabled]="saving">
+        <mat-icon>save</mat-icon> {{ saving ? 'Saving…' : 'Save All' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Bulk Grading Panel ─────────────────────────────────────────── -->
+  @if (showBulkGrading) {
+    <div class="gb-bulk-card">
+      <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+        <mat-icon>select_all</mat-icon>
+        <span style="font-weight:600;font-size:.875rem">Assign same score to all students for first assessment:</span>
+        <input type="number" class="ts-search" style="width:80px" [(ngModel)]="bulkScore" placeholder="Score" min="0" max="100" />
+        <button class="ts-btn-primary" (click)="applyBulkGrade()" [disabled]="!bulkScore">Apply</button>
+        <button class="ts-btn-secondary" (click)="showBulkGrading=false">Cancel</button>
+      </div>
+    </div>
+  }
+
+  <!-- ── Legend ────────────────────────────────────────────────────── -->
+  <div class="gb-legend">
+    <span class="gb-legend-item"><span class="gb-grade-dot" style="background:#22c55e"></span>Excellent (85+)</span>
+    <span class="gb-legend-item"><span class="gb-grade-dot" style="background:#f59e0b"></span>Good (70–84)</span>
+    <span class="gb-legend-item"><span class="gb-grade-dot" style="background:#ef4444"></span>Needs Work (&lt;70)</span>
+    <span class="gb-legend-item"><span class="gb-grade-dot" style="background:#e2e8f0"></span>Not graded</span>
+    <span class="gb-legend-tip">Click cell to edit · <mat-icon style="font-size:12px;width:12px;height:12px">chat</mat-icon> icon for feedback</span>
+  </div>
+
+  <!-- ── Grade Distribution ────────────────────────────────────────── -->
+  @if (totalGraded > 0) {
+    <div class="gb-distrib-card">
+      <h3 style="font-size:.8rem;font-weight:700;color:#64748b;margin:0 0 .75rem;display:flex;align-items:center;gap:.5rem;text-transform:uppercase;letter-spacing:.05em">
+        <mat-icon style="font-size:14px;width:14px;height:14px">bar_chart</mat-icon> Grade Distribution
+      </h3>
+      <div style="display:flex;gap:1rem;align-items:flex-end;height:80px">
+        @for (d of distribution; track d.range) {
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div class="gb-distrib-bar" [style.height.%]="totalGraded > 0 ? (d.count / totalGraded) * 100 : 0"
+                 [style.background]="d.color">
+              <span class="gb-distrib-count">{{ d.count }}</span>
+            </div>
+            <span style="font-size:.65rem;color:#94a3b8;font-weight:600">{{ d.range }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- ── Grade Matrix Table ─────────────────────────────────────────── -->
+  @if (students.length === 0 || assessments.length === 0) {
+    <div class="gb-empty">
+      <mat-icon>table_chart</mat-icon>
+      <p>No students or assessments found for <strong>{{ selectedClass }}</strong>.</p>
+      <a routerLink="/tutor/assessments" class="gb-link">Create an assessment</a>
+    </div>
+  } @else {
+    <div class="gb-table-wrap">
+      <table class="gb-table">
+        <thead>
+          <tr>
+            <th class="gb-th-student">Student</th>
+            @for (a of assessments; track a.id) {
+              <th class="gb-th-assessment">
+                <div class="gb-th-title">{{ a.title }}</div>
+                <div class="gb-th-meta">
+                  <span class="gb-badge-type" [class]="'type-' + a.type.toLowerCase()">{{ a.type }}</span>
+                  <span class="gb-th-avg" [style.color]="gradeColor(assessmentAvg(a.id))">
+                    avg: {{ assessmentAvg(a.id) || '—' }}
+                  </span>
+                </div>
+              </th>
+            }
+            <th class="gb-th-avg-col">Avg</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of students; track s.id) {
+            <tr>
+              <td class="gb-td-student">
+                <div class="gb-student-cell">
+                  <div class="gb-student-avatar">{{ s.firstName[0] }}{{ s.lastName[0] }}</div>
+                  <div>
+                    <div class="gb-student-name">{{ s.firstName }} {{ s.lastName }}</div>
+                    <div class="gb-student-email">{{ s.email }}</div>
+                  </div>
+                </div>
+              </td>
+              @for (a of assessments; track a.id) {
+                <td class="gb-td-grade"
+                    [class.gb-cell-editing]="isEditing(s.id, a.id)"
+                    [class.gb-cell-feedback]="isFeedback(s.id, a.id)"
+                    (click)="startEdit(s.id, a.id)">
+                  @if (isEditing(s.id, a.id)) {
+                    <input class="gb-input" type="number" [(ngModel)]="editValue"
+                           [max]="a.maxScore ?? 100" min="0"
+                           (keydown.enter)="commitEdit(s.id, a.id)"
+                           (keydown.escape)="cancelEdit()"
+                           (blur)="commitEdit(s.id, a.id)"
+                           autofocus />
+                  } @else if (isFeedback(s.id, a.id)) {
+                    <div style="display:flex;flex-direction:column;gap:4px;min-width:120px">
+                      <input class="gb-input" style="width:100%;font-size:.75rem" [(ngModel)]="feedbackValue"
+                             placeholder="Write feedback..."
+                             (keydown.enter)="saveFeedback()"
+                             (keydown.escape)="cancelFeedback()"
+                             (blur)="saveFeedback()" autofocus />
+                    </div>
+                  } @else {
+                    @if (gradeMatrix[s.id]?.[a.id]) {
+                      <div class="gb-grade-cell"
+                           [style.background]="gradeColor(gradeMatrix[s.id][a.id].score) + '15'"
+                           [style.color]="gradeColor(gradeMatrix[s.id][a.id].score)">
+                        <span class="gb-score">{{ gradeMatrix[s.id][a.id].score }}</span>
+                        <span class="gb-letter">{{ gradeMatrix[s.id][a.id].grade }}</span>
+                        @if (gradeMatrix[s.id][a.id].feedback) {
+                          <span class="gb-feedback-dot" title="Has feedback">💬</span>
+                        }
+                      </div>
+                    } @else {
+                      <div class="gb-empty-cell">—</div>
+                    }
+                    @if (gradeMatrix[s.id]?.[a.id]) {
+                      <button class="gb-feedback-btn" (click)="startFeedback(s.id, a.id); $event.stopPropagation()"
+                              title="Add feedback">
+                        <mat-icon style="font-size:12px;width:12px;height:12px">chat</mat-icon>
+                      </button>
+                    }
+                  }
+                </td>
+              }
+              <td class="gb-td-avg">
+                @if (studentAvg(s.id) > 0) {
+                  <span class="gb-avg-badge" [style.color]="gradeColor(studentAvg(s.id))">
+                    {{ studentAvg(s.id) }}
+                  </span>
+                } @else {
+                  <span style="color:#cbd5e1">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+</div>

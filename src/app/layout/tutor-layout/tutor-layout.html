@@ -1,31 +1,51 @@
-<div class="tutor-shell">
+<div class="app-shell" [class.sidebar-open]="sidebarOpen">
+  <div class="sidebar-overlay" (click)="sidebarOpen = false"></div>
+
+  <!-- ── Sidebar ──────────────────────────────────────────────────── -->
   <aside class="sidebar">
     <div class="sidebar-logo">
       <img src="assets/images/logo.png" alt="Fluencity" class="logo-img"
-           onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
+           onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
       <span class="logo-fallback">Fluencity</span>
+      <button class="sidebar-close" (click)="sidebarOpen = false"><mat-icon>close</mat-icon></button>
     </div>
 
     <nav>
-      <a routerLink="/tutor/dashboard"    routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
-        <mat-icon>home</mat-icon><span>Dashboard</span>
+      <span class="nav-section">Overview</span>
+      <a routerLink="/tutor/dashboard" routerLinkActive="active">
+        <mat-icon>dashboard</mat-icon><span>Dashboard</span>
+      </a>
+
+      <span class="nav-section">Teaching</span>
+      <a routerLink="/tutor/students" routerLinkActive="active">
+        <mat-icon>people</mat-icon><span>My Students</span>
       </a>
       <a routerLink="/tutor/assessments" routerLinkActive="active">
         <mat-icon>assignment</mat-icon><span>Assessments</span>
       </a>
+      <a routerLink="/tutor/gradebook" routerLinkActive="active">
+        <mat-icon>menu_book</mat-icon><span>Grade Book</span>
+      </a>
+      <a routerLink="/tutor/attendance" routerLinkActive="active">
+        <mat-icon>fact_check</mat-icon><span>Attendance</span>
+      </a>
       <a routerLink="/tutor/planning" routerLinkActive="active">
         <mat-icon>event_note</mat-icon><span>Planning</span>
       </a>
-      <a routerLink="/tutor/grades"      routerLinkActive="active">
-        <mat-icon>grade</mat-icon><span>Grades</span>
-      </a>
-      <a routerLink="/tutor/resources"   routerLinkActive="active">
+
+      <span class="nav-section">Resources</span>
+      <a routerLink="/tutor/resources" routerLinkActive="active">
         <mat-icon>library_books</mat-icon><span>Resources</span>
       </a>
-      <a routerLink="/tutor/reports"    routerLinkActive="active">
+      <a routerLink="/tutor/grades" routerLinkActive="active">
+        <mat-icon>bar_chart</mat-icon><span>Analytics</span>
+      </a>
+      <a routerLink="/tutor/reports" routerLinkActive="active">
         <mat-icon>analytics</mat-icon><span>Reports</span>
       </a>
-      <a routerLink="/tutor/profile"    routerLinkActive="active">
+
+      <span class="nav-section">Account</span>
+      <a routerLink="/tutor/profile" routerLinkActive="active">
         <mat-icon>manage_accounts</mat-icon><span>My Profile</span>
       </a>
     </nav>
@@ -35,15 +55,141 @@
     </button>
   </aside>
 
+  <!-- ── Main area ─────────────────────────────────────────────────── -->
   <div class="main">
     <header class="topbar">
-      <span class="portal-title">Tutor Portal</span>
-      <a routerLink="/tutor/profile" class="user-pill">
-        <mat-icon>account_circle</mat-icon><span>{{ userName }}</span>
-      </a>
+      <div class="topbar-left">
+        <button class="hamburger" (click)="sidebarOpen = !sidebarOpen">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span class="portal-title">Tutor Portal</span>
+      </div>
+
+      <div class="topbar-right">
+        <!-- AI Assistant -->
+        <div class="ai-wrap">
+          <button class="icon-btn-topbar ai-btn" (click)="aiAssistantOpen = !aiAssistantOpen; $event.stopPropagation()" title="AI Assistant">
+            <mat-icon>auto_awesome</mat-icon>
+          </button>
+          @if (aiAssistantOpen) {
+            <div class="ai-dropdown" (click)="$event.stopPropagation()">
+              <div class="ai-dropdown-header">
+                <mat-icon style="font-size:18px;width:18px;height:18px">auto_awesome</mat-icon>
+                AI Teaching Assistant
+              </div>
+              <div class="ai-dropdown-body">
+                @if (aiResponse) {
+                  <div class="ai-response visible">
+                    <mat-icon style="font-size:16px;width:16px;height:16px">psychology</mat-icon>
+                    {{ aiResponse }}
+                  </div>
+                } @else {
+                  <div class="ai-hint">
+                    <p>Ask me anything about your classes:</p>
+                    <ul>
+                      <li>"Who is at risk?"</li>
+                      <li>"What's my class average?"</li>
+                      <li>"Attendance insights"</li>
+                      <li>"Lesson recommendations"</li>
+                    </ul>
+                  </div>
+                }
+              </div>
+              <div class="ai-input-row">
+                <input type="text" class="ai-input" [(ngModel)]="aiQuery" placeholder="Ask AI..."
+                       (keydown.enter)="askAI()" />
+                <button class="ai-send-btn" (click)="askAI()">
+                  <mat-icon style="font-size:16px;width:16px;height:16px">send</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Messages -->
+        <div class="msgs-wrap">
+          <button class="icon-btn-topbar" (click)="messagesOpen = !messagesOpen; $event.stopPropagation()" title="Messages">
+            <mat-icon>mail</mat-icon>
+            @if (unreadMessages > 0) {
+              <span class="notif-badge msg-badge">{{ unreadMessages }}</span>
+            }
+          </button>
+          @if (messagesOpen) {
+            <div class="msgs-dropdown" (click)="$event.stopPropagation()">
+              <div class="notif-header">
+                <span>Messages</span>
+                <span class="msgs-count">{{ unreadMessages }} new</span>
+              </div>
+              @for (m of messages; track m.from) {
+                <div class="msg-item" [class.unread]="m.unread">
+                  <div class="msg-avatar">{{ m.avatar }}</div>
+                  <div class="msg-content">
+                    <div class="msg-from">{{ m.from }}</div>
+                    <p class="msg-preview">{{ m.preview }}</p>
+                    <span class="notif-time">{{ m.time }}</span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Notifications -->
+        <div class="notif-wrap">
+          <button class="icon-btn-topbar" (click)="notifOpen = !notifOpen; $event.stopPropagation()" title="Notifications">
+            <mat-icon>notifications</mat-icon>
+            @if (unreadCount > 0) {
+              <span class="notif-badge">{{ unreadCount }}</span>
+            }
+          </button>
+          @if (notifOpen) {
+            <div class="notif-dropdown" (click)="$event.stopPropagation()">
+              <div class="notif-header">Notifications</div>
+              @for (n of notifications; track n.text) {
+                <div class="notif-item" [class.unread]="n.unread">
+                  <div class="notif-icon"><mat-icon>{{ n.icon }}</mat-icon></div>
+                  <div class="notif-content">
+                    <p class="notif-text">{{ n.text }}</p>
+                    <span class="notif-time">{{ n.time }}</span>
+                  </div>
+                </div>
+              }
+              @if (notifications.length === 0) {
+                <div style="padding:1rem;text-align:center;color:#94a3b8;font-size:.875rem;">All caught up!</div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- User menu -->
+        <div class="user-menu-wrap">
+          <button class="user-pill" (click)="userMenuOpen = !userMenuOpen; $event.stopPropagation()">
+            <div class="avatar-circle tutor">{{ userName[0]?.toUpperCase() }}</div>
+            <span class="user-name">{{ userName }}</span>
+            <mat-icon class="chevron">expand_more</mat-icon>
+          </button>
+          @if (userMenuOpen) {
+            <div class="user-dropdown" (click)="$event.stopPropagation()">
+              <div class="user-dropdown-header">
+                <div class="avatar-circle tutor lg">{{ userName[0]?.toUpperCase() }}</div>
+                <div>
+                  <div class="user-dropdown-name">{{ userName }}</div>
+                  <div class="user-dropdown-email">{{ userEmail }}</div>
+                </div>
+              </div>
+              <div class="user-dropdown-divider"></div>
+              <a routerLink="/tutor/profile" class="user-dropdown-item" (click)="userMenuOpen = false">
+                <mat-icon>manage_accounts</mat-icon> My Profile
+              </a>
+              <button class="user-dropdown-item danger" (click)="logout()">
+                <mat-icon>logout</mat-icon> Sign Out
+              </button>
+            </div>
+          }
+        </div>
+      </div>
     </header>
-    <main class="content">
-      <router-outlet></router-outlet>
-    </main>
+
+    <main class="content"><router-outlet></router-outlet></main>
   </div>
 </div>

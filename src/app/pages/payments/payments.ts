@@ -21,10 +21,19 @@ export class Payments implements OnInit, OnDestroy {
   searchTerm = '';
   selectedStatus = '';
   selectedMethod = '';
-  readonly pageSize = 3;
+  readonly pageSize = 8;
   currentPage = 1;
   editingPayment: any = null;
   private destroy$ = new Subject<void>();
+
+  // KPI summaries
+  totalRevenue = 0;
+  paidRevenue = 0;
+  pendingRevenue = 0;
+  overdueRevenue = 0;
+  paidCount = 0;
+  pendingCount = 0;
+  overdueCount = 0;
 
   constructor(
     private paymentService: PaymentService,
@@ -32,42 +41,43 @@ export class Payments implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {
     this.router.events
-      .pipe(
-        filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-        takeUntil(this.destroy$)
-      )
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd), takeUntil(this.destroy$))
       .subscribe((e) => {
-        if (e.urlAfterRedirects.includes('/payments')) {
-          this.loadPayments();
-        }
+        if (e.urlAfterRedirects.includes('/payments')) this.loadPayments();
       });
   }
 
-  ngOnInit(): void {
-    this.loadPayments();
-  }
+  ngOnInit(): void { this.loadPayments(); }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+  ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }
 
   loadPayments(): void {
     this.paymentService.getAll().subscribe({
       next: (data) => {
         this.payments = Array.isArray(data) ? [...data] : [];
+        this.computeKpis();
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.payments = [];
-        this.cdr.detectChanges();
-      }
+      error: () => { this.payments = []; this.cdr.detectChanges(); }
     });
+  }
+
+  computeKpis(): void {
+    const paid    = this.payments.filter(p => p.status === 'PAID');
+    const pending = this.payments.filter(p => p.status === 'PENDING');
+    const overdue = this.payments.filter(p => p.status === 'OVERDUE');
+    this.paidRevenue    = paid.map(p => p.amount).reduce((a, b) => a + b, 0);
+    this.pendingRevenue = pending.map(p => p.amount).reduce((a, b) => a + b, 0);
+    this.overdueRevenue = overdue.map(p => p.amount).reduce((a, b) => a + b, 0);
+    this.totalRevenue   = this.payments.map(p => p.amount).reduce((a, b) => a + b, 0);
+    this.paidCount    = paid.length;
+    this.pendingCount = pending.length;
+    this.overdueCount = overdue.length;
   }
 
   startEditPayment(p: any): void {
     this.editingPayment = {
-      paymentId: p.paymentId,
+      id: p.id,
       amount: p.amount,
       method: p.method,
       status: p.status,
@@ -75,44 +85,41 @@ export class Payments implements OnInit, OnDestroy {
     };
   }
 
-  cancelEditPayment(): void {
-    this.editingPayment = null;
-  }
+  cancelEditPayment(): void { this.editingPayment = null; }
 
   savePayment(): void {
     if (!this.editingPayment) return;
-    const id = this.editingPayment.paymentId;
-    const payload = {
-      ...this.editingPayment,
-      date: this.editingPayment.date ? this.editingPayment.date + 'T00:00:00' : null
-    };
+    const id = this.editingPayment.id;
+    const payload = { ...this.editingPayment, date: this.editingPayment.date ? this.editingPayment.date + 'T00:00:00' : null };
     this.paymentService.update(id, payload).subscribe({
       next: (updated) => {
-        const idx = this.payments.findIndex((x) => x.paymentId === id);
+        const idx = this.payments.findIndex(x => x.id === id);
         if (idx !== -1) this.payments[idx] = { ...this.payments[idx], ...updated };
         this.editingPayment = null;
+        this.computeKpis();
         this.cdr.detectChanges();
       },
-      error: () => {
-        alert('Erreur lors de la mise à jour du paiement.');
-      }
+      error: () => alert('Failed to update payment.')
     });
   }
 
   deletePayment(id: number): void {
     this.paymentService.delete(id).subscribe(() => {
-      this.payments = this.payments.filter((p) => p.paymentId !== id);
+      this.payments = this.payments.filter(p => p.id !== id);
       this.currentPage = Math.min(this.currentPage, Math.max(1, this.totalPagesPayment));
+      this.computeKpis();
       this.cdr.detectChanges();
     });
   }
 
   get filteredPayments(): any[] {
-    return this.payments.filter((p) => {
-      const matchesSearch =
-        !this.searchTerm ||
-        (p.paymentId != null && p.paymentId.toString().includes(this.searchTerm)) ||
-        (p.method && p.method.toLowerCase().includes(this.searchTerm.toLowerCase()));
+    return this.payments.filter(p => {
+      const q = this.searchTerm.toLowerCase();
+      const matchesSearch = !q
+        || String(p.id).includes(q)
+        || (p.studentName && p.studentName.toLowerCase().includes(q))
+        || (p.description && p.description.toLowerCase().includes(q))
+        || (p.method && p.method.toLowerCase().includes(q));
       const matchesStatus = !this.selectedStatus || p.status === this.selectedStatus;
       const matchesMethod = !this.selectedMethod || p.method === this.selectedMethod;
       return matchesSearch && matchesStatus && matchesMethod;
@@ -135,20 +142,25 @@ export class Payments implements OnInit, OnDestroy {
   }
 
   exportPdf(): void {
-    const rows = this.filteredPayments.map((p) => [
-      String(p.paymentId ?? ''),
+    const rows = this.filteredPayments.map(p => [
+      String(p.id ?? ''),
+      p.studentName ?? '—',
+      p.description ?? '—',
       String(p.amount ?? '') + ' TND',
       String(p.method ?? ''),
       String(p.status ?? ''),
-      p.date ? new Date(p.date).toLocaleString() : ''
+      p.dueDate ? new Date(p.dueDate).toLocaleDateString() : '—'
     ]);
     const doc = new jsPDF();
     doc.setFontSize(16);
-    doc.text('Payments Management', 14, 20);
+    doc.text('Payments Report — Fluencity', 14, 20);
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Generated: ${new Date().toLocaleString()}  |  Total: ${this.totalRevenue} TND  |  Paid: ${this.paidRevenue} TND`, 14, 28);
     autoTable(doc, {
-      head: [['ID', 'Amount', 'Method', 'Status', 'Date']],
+      head: [['#', 'Student', 'Description', 'Amount', 'Method', 'Status', 'Due Date']],
       body: rows,
-      startY: 28
+      startY: 34
     });
     doc.save('payments.pdf');
   }

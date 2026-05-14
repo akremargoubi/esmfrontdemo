@@ -1,0 +1,121 @@
+<div class="pg-page">
+
+  <!-- ── Header ────────────────────────────────────────────────────── -->
+  <div class="pg-header">
+    <div>
+      <h1 class="pg-title">Child Grades</h1>
+      <p class="pg-sub">Academic performance across all assessments</p>
+    </div>
+  </div>
+
+  <!-- ── Child selector ────────────────────────────────────────────── -->
+  @if (children.length > 1) {
+    <div class="pg-child-tabs">
+      @for (c of children; track c.id) {
+        <button class="pg-child-tab" [class.active]="selected?.id === c.id" (click)="selectChild(c)">
+          <span class="pg-tab-avatar">{{ c.firstName[0] }}</span>
+          {{ c.firstName }} {{ c.lastName }}
+          <span class="pg-tab-chip">{{ c.className }}</span>
+        </button>
+      }
+    </div>
+  }
+
+  @if (children.length === 0) {
+    <div class="pg-empty">
+      <mat-icon>family_restroom</mat-icon>
+      <p>No children linked to your account.</p>
+    </div>
+  }
+
+  @if (selected) {
+    <!-- ── Stats row ──────────────────────────────────────────────── -->
+    <div class="pg-stats-grid">
+      <div class="pg-stat">
+        <div class="pg-stat-icon" style="background:#ede9fe;color:#7c3aed"><mat-icon>bar_chart</mat-icon></div>
+        <div>
+          <div class="pg-stat-val" [style.color]="barColor(avgScore)">{{ avgScore > 0 ? avgScore : '—' }}</div>
+          <div class="pg-stat-lbl">Avg Score</div>
+        </div>
+      </div>
+      <div class="pg-stat">
+        <div class="pg-stat-icon" style="background:#d1fae5;color:#15803d"><mat-icon>check_circle</mat-icon></div>
+        <div>
+          <div class="pg-stat-val" [style.color]="barColor(passRate)">{{ grades.length > 0 ? passRate + '%' : '—' }}</div>
+          <div class="pg-stat-lbl">Pass Rate</div>
+        </div>
+      </div>
+      <div class="pg-stat">
+        <div class="pg-stat-icon" style="background:#dbeafe;color:#1d4ed8"><mat-icon>emoji_events</mat-icon></div>
+        <div>
+          <div class="pg-stat-val" style="color:#1d4ed8">{{ bestScore > 0 ? bestScore : '—' }}</div>
+          <div class="pg-stat-lbl">Best Score</div>
+        </div>
+      </div>
+      <div class="pg-stat">
+        <div class="pg-stat-icon" style="background:#f0fdf4;color:#16a34a"><mat-icon>assignment</mat-icon></div>
+        <div>
+          <div class="pg-stat-val" style="color:#16a34a">{{ grades.length }}</div>
+          <div class="pg-stat-lbl">Graded Tests</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Upcoming assessment notice ────────────────────────────── -->
+    @if (upcomingAssessment(selected.className); as upcoming) {
+      <div class="pg-upcoming-banner">
+        <mat-icon>event</mat-icon>
+        <span>Upcoming: <strong>{{ upcoming.title }}</strong> — {{ upcoming.startDate | date:'dd MMM yyyy' }}</span>
+      </div>
+    }
+
+    <!-- ── Grades table or empty ─────────────────────────────────── -->
+    @if (grades.length === 0) {
+      <div class="pg-empty">
+        <mat-icon>assignment</mat-icon>
+        <p>No grades recorded yet for <strong>{{ selected.firstName }}</strong>.</p>
+      </div>
+    } @else {
+      <div class="pg-table-card">
+        <table class="pg-table">
+          <thead>
+            <tr>
+              <th>Assessment</th>
+              <th>Course</th>
+              <th>Score</th>
+              <th>Progress</th>
+              <th>Grade</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (g of grades; track g.id) {
+              <tr>
+                <td class="pg-td-title">{{ g.assessmentTitle || '#' + g.assessmentId }}</td>
+                <td class="pg-td-muted">{{ g.courseName || '—' }}</td>
+                <td><strong [style.color]="mentionColor(g)">{{ g.score }}/{{ g.maxScore }}</strong></td>
+                <td class="pg-td-bar">
+                  <div class="pg-bar-track">
+                    <div class="pg-bar-fill" [style.width.%]="pct(g)" [style.background]="barColor(pct(g))"></div>
+                  </div>
+                  <span class="pg-bar-pct" [style.color]="mentionColor(g)">{{ pct(g) }}%</span>
+                </td>
+                <td>
+                  <span class="pg-grade-badge">{{ g.grade || '—' }}</span>
+                </td>
+                <td>
+                  <span class="pg-mention-badge"
+                        [style.background]="mentionBg(g)"
+                        [style.color]="mentionColor(g)">
+                    {{ mention(g) }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+</div>

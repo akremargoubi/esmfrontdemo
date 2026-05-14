@@ -1,260 +1,108 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
+import { MOCK_COURSES } from '../core/mock/mock-data';
 
-export interface Course {
-  courseId?: number;
-  name: string;
-  level: string;
-  description?: string;
-  categoryId?: number;
-  instructorId?: number;
-  price?: number;
-  thumbnailUrl?: string;
-  isPublished?: boolean;
-  ratingAvg?: number;
-  ratingCount?: number;
-}
+export interface Course { courseId?: number; name: string; level: string; description?: string; categoryId?: number; instructorId?: number | string; instructorName?: string; price?: number; thumbnailUrl?: string; isPublished?: boolean; ratingAvg?: number; ratingCount?: number; enrollmentCount?: number; category?: string; }
+export interface PageResponse<T> { content: T[]; page: number; size: number; totalElements: number; totalPages: number; first: boolean; last: boolean; }
+export interface Category { id?: number; name: string; description?: string; slug?: string; }
+export interface Instructor { id?: number; firstName: string; lastName: string; email?: string; bio?: string; avatarUrl?: string; }
+export interface CourseSearchParams { search?: string; level?: string; categoryId?: number; instructorId?: number; isPublished?: boolean; minRating?: number; freeOnly?: boolean; sortBy?: string; sortDir?: string; page?: number; size?: number; }
+export interface Module { id?: number; courseId?: number; title: string; lessons?: any[]; order?: number; }
+export interface Review { id?: number; courseId?: number; studentName?: string; rating?: number; comment?: string; createdAt?: string; }
 
-export interface PageResponse<T> {
-  content: T[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  first: boolean;
-  last: boolean;
-}
+const CATEGORIES: Category[] = [
+  { id: 1, name: 'General' }, { id: 2, name: 'Business' }, { id: 3, name: 'Exam' },
+  { id: 4, name: 'Kids' }, { id: 5, name: 'Academic' },
+];
 
-export interface Category {
-  id?: number;
-  name: string;
-  description?: string;
-  slug?: string;
-}
+const INSTRUCTORS: Instructor[] = [
+  { id: 2, firstName: 'Sonia',  lastName: 'Ben Ali',  email: 'tutor@fluencity.com' },
+  { id: 5, firstName: 'Omar',   lastName: 'Khelifi',  email: 'omar.k@fluencity.com' },
+  { id: 6, firstName: 'Leila',  lastName: 'Amri',     email: 'leila.a@fluencity.com' },
+];
 
-export interface Instructor {
-  id?: number;
-  firstName: string;
-  lastName: string;
-  email?: string;
-  bio?: string;
-  avatarUrl?: string;
-}
+let _courses: Course[] = [...MOCK_COURSES];
 
-export interface Module {
-  id?: number;
-  courseId: number;
-  title: string;
-  orderIndex?: number;
-  lessons?: Lesson[];
-}
-
-export interface Lesson {
-  id?: number;
-  moduleId: number;
-  title: string;
-  contentType?: 'VIDEO' | 'PDF' | 'QUIZ' | 'TEXT';
-  contentUrl?: string;
-  contentText?: string;
-  quizContentJson?: string;
-  durationMinutes?: number;
-  orderIndex?: number;
-}
-
-export interface Review {
-  id?: number;
-  courseId: number;
-  userId: number;
-  rating: number;
-  comment?: string;
-  createdAt?: string;
-}
-
-export interface CourseSearchParams {
-  search?: string;
-  level?: string;
-  categoryId?: number;
-  instructorId?: number;
-  isPublished?: boolean;
-  minRating?: number;
-  freeOnly?: boolean;  // true=free only, false=paid only
-  sortBy?: string;     // courseId, ratingAvg, ratingCount, price, name
-  sortDir?: string;    // asc, desc
-  page?: number;
-  size?: number;
-}
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class CoursesService {
-  private readonly baseUrl = environment.apiUrl;
-
-  constructor(private http: HttpClient) {}
-
-  // ========== COURSES ==========
-  getCourses(): Observable<Course[]> {
-    return this.http.get<Course[]>(`${this.baseUrl}/api/v1/courses`);
-  }
 
   searchCourses(params: CourseSearchParams): Observable<PageResponse<Course>> {
-    let httpParams = new HttpParams();
-    if (params.search) httpParams = httpParams.set('search', params.search);
-    if (params.level) httpParams = httpParams.set('level', params.level);
-    if (params.categoryId != null) httpParams = httpParams.set('categoryId', params.categoryId);
-    if (params.instructorId != null) httpParams = httpParams.set('instructorId', params.instructorId);
-    if (params.isPublished != null) httpParams = httpParams.set('isPublished', params.isPublished);
-    if (params.minRating != null) httpParams = httpParams.set('minRating', params.minRating);
-    if (params.freeOnly != null) httpParams = httpParams.set('freeOnly', params.freeOnly);
-    if (params.sortBy) httpParams = httpParams.set('sortBy', params.sortBy);
-    if (params.sortDir) httpParams = httpParams.set('sortDir', params.sortDir);
-    if (params.page != null) httpParams = httpParams.set('page', params.page);
-    if (params.size != null) httpParams = httpParams.set('size', params.size);
-    return this.http.get<PageResponse<Course>>(`${this.baseUrl}/api/v1/courses`, { params: httpParams });
+    let data = [..._courses];
+    if (params.search) data = data.filter(c => c.name.toLowerCase().includes(params.search!.toLowerCase()) || (c.description ?? '').toLowerCase().includes(params.search!.toLowerCase()));
+    if (params.level) data = data.filter(c => c.level === params.level);
+    if (params.minRating != null) data = data.filter(c => (c.ratingAvg ?? 0) >= params.minRating!);
+    if (params.freeOnly === true) data = data.filter(c => !c.price || c.price === 0);
+    if (params.freeOnly === false) data = data.filter(c => c.price && c.price > 0);
+    if (params.sortBy === 'ratingAvg' || params.sortBy === 'popular') data = [...data].sort((a, b) => (b.ratingAvg ?? 0) - (a.ratingAvg ?? 0));
+    else if (params.sortBy === 'price' && params.sortDir === 'asc') data = [...data].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+    else if (params.sortBy === 'price') data = [...data].sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+    const page = params.page ?? 0; const size = params.size ?? 12;
+    const content = data.slice(page * size, page * size + size);
+    return of({ content, page, size, totalElements: data.length, totalPages: Math.ceil(data.length / size), first: page === 0, last: (page + 1) * size >= data.length }).pipe(delay(300));
   }
 
+  getCourses(): Observable<Course[]> { return of([..._courses]).pipe(delay(200)); }
+
   getCourse(id: number): Observable<Course> {
-    return this.http.get<Course>(`${this.baseUrl}/api/v1/courses/${id}`);
+    return of(_courses.find(c => c.courseId === id) ?? _courses[0]).pipe(delay(200));
   }
 
   createCourse(course: Course): Observable<Course> {
-    return this.http.post<Course>(`${this.baseUrl}/api/v1/courses`, course);
+    const created = { ...course, courseId: Math.max(0, ..._courses.map(c => c.courseId ?? 0)) + 1, isPublished: false };
+    _courses = [..._courses, created];
+    return of(created).pipe(delay(500));
   }
 
   updateCourse(id: number, course: Course): Observable<Course> {
-    return this.http.put<Course>(`${this.baseUrl}/api/v1/courses/${id}`, course);
+    const updated = { ...course, courseId: id };
+    _courses = _courses.map(c => c.courseId === id ? updated : c);
+    return of(updated).pipe(delay(400));
   }
 
   deleteCourse(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/api/v1/courses/${id}`);
+    _courses = _courses.filter(c => c.courseId !== id);
+    return of(undefined).pipe(delay(300));
   }
 
-  /** Upload course thumbnail image; returns { url: string } */
-  uploadImage(file: File): Observable<{ url: string; filename?: string }> {
-    const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post<{ url: string; filename?: string }>(`${this.baseUrl}/api/v1/upload/image`, formData);
+  uploadImage(_file: File): Observable<{ url: string }> {
+    return of({ url: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=640' }).pipe(delay(800));
   }
 
   publishCourse(id: number): Observable<Course> {
-    return this.http.patch<Course>(`${this.baseUrl}/api/v1/courses/${id}/publish`, {});
+    _courses = _courses.map(c => c.courseId === id ? { ...c, isPublished: true } : c);
+    return of(_courses.find(c => c.courseId === id)!).pipe(delay(300));
   }
 
-  // ========== CATEGORIES ==========
-  getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(`${this.baseUrl}/api/v1/categories`);
-  }
+  getCategories(): Observable<Category[]> { return of([...CATEGORIES]).pipe(delay(150)); }
+  getCategory(id: number): Observable<Category> { return of(CATEGORIES.find(c => c.id === id) ?? CATEGORIES[0]).pipe(delay(150)); }
+  createCategory(cat: Category): Observable<Category> { return of({ ...cat, id: Date.now() }).pipe(delay(400)); }
+  updateCategory(id: number, cat: Category): Observable<Category> { return of({ ...cat, id }).pipe(delay(400)); }
+  deleteCategory(_id: number): Observable<void> { return of(undefined).pipe(delay(300)); }
 
-  getCategory(id: number): Observable<Category> {
-    return this.http.get<Category>(`${this.baseUrl}/api/v1/categories/${id}`);
-  }
+  getInstructors(): Observable<Instructor[]> { return of([...INSTRUCTORS]).pipe(delay(150)); }
+  getInstructor(id: number | string): Observable<Instructor> { return of(INSTRUCTORS.find(i => i.id === Number(id)) ?? INSTRUCTORS[0]).pipe(delay(150)); }
+  createInstructor(inst: Instructor): Observable<Instructor> { return of({ ...inst, id: Date.now() }).pipe(delay(400)); }
+  updateInstructor(id: number, inst: Instructor): Observable<Instructor> { return of({ ...inst, id }).pipe(delay(400)); }
+  deleteInstructor(_id: number): Observable<void> { return of(undefined).pipe(delay(300)); }
 
-  createCategory(cat: Category): Observable<Category> {
-    return this.http.post<Category>(`${this.baseUrl}/api/v1/categories`, cat);
-  }
+  getModules(_courseId: number, _includeContent?: boolean): Observable<Module[]> { return of([]); }
+  getModule(_id: number): Observable<any> { return of({}); }
+  createModule(m: any): Observable<any> { return of({ ...m, id: Date.now() }).pipe(delay(400)); }
+  updateModule(id: number, m: any): Observable<any> { return of({ ...m, id }).pipe(delay(400)); }
+  deleteModule(_id: number): Observable<void> { return of(undefined).pipe(delay(300)); }
 
-  updateCategory(id: number, cat: Category): Observable<Category> {
-    return this.http.put<Category>(`${this.baseUrl}/api/v1/categories/${id}`, cat);
-  }
+  getLessons(_moduleId: number): Observable<any[]> { return of([]); }
+  getLesson(_id: number): Observable<any> { return of({}); }
+  createLesson(l: any): Observable<any> { return of({ ...l, id: Date.now() }).pipe(delay(400)); }
+  updateLesson(id: number, l: any): Observable<any> { return of({ ...l, id }).pipe(delay(400)); }
+  deleteLesson(_id: number): Observable<void> { return of(undefined).pipe(delay(300)); }
 
-  deleteCategory(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/api/v1/categories/${id}`);
-  }
+  getReviews(_courseId: number, _page?: number, _size?: number): Observable<PageResponse<Review>> { return of({ content: [], page: 0, size: 20, totalElements: 0, totalPages: 0, first: true, last: true }); }
+  createReview(r: any): Observable<any> { return of({ ...r, id: Date.now() }).pipe(delay(400)); }
+  updateReview(id: number, r: any): Observable<any> { return of({ ...r, id }).pipe(delay(400)); }
+  deleteReview(_id: number): Observable<void> { return of(undefined).pipe(delay(300)); }
 
-  // ========== INSTRUCTORS ==========
-  getInstructors(): Observable<Instructor[]> {
-    return this.http.get<Instructor[]>(`${this.baseUrl}/api/v1/instructors`);
-  }
-
-  getInstructor(id: number): Observable<Instructor> {
-    return this.http.get<Instructor>(`${this.baseUrl}/api/v1/instructors/${id}`);
-  }
-
-  createInstructor(inst: Instructor): Observable<Instructor> {
-    return this.http.post<Instructor>(`${this.baseUrl}/api/v1/instructors`, inst);
-  }
-
-  updateInstructor(id: number, inst: Instructor): Observable<Instructor> {
-    return this.http.put<Instructor>(`${this.baseUrl}/api/v1/instructors/${id}`, inst);
-  }
-
-  deleteInstructor(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/api/v1/instructors/${id}`);
-  }
-
-  // ========== MODULES ==========
-  getModules(courseId: number, includeLessons = false): Observable<Module[]> {
-    let httpParams = new HttpParams().set('courseId', courseId.toString());
-    if (includeLessons) {
-      httpParams = httpParams.set('includeLessons', 'true');
-    }
-    return this.http.get<Module[]>(`${this.baseUrl}/api/v1/modules`, { params: httpParams });
-  }
-
-  getModule(id: number, includeLessons = false): Observable<Module> {
-    const params = includeLessons ? new HttpParams().set('includeLessons', 'true') : undefined;
-    return this.http.get<Module>(`${this.baseUrl}/api/v1/modules/${id}`, params ? { params } : {});
-  }
-
-  createModule(module: Module): Observable<Module> {
-    return this.http.post<Module>(`${this.baseUrl}/api/v1/modules`, module);
-  }
-
-  updateModule(id: number, module: Module): Observable<Module> {
-    return this.http.put<Module>(`${this.baseUrl}/api/v1/modules/${id}`, module);
-  }
-
-  deleteModule(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/api/v1/modules/${id}`);
-  }
-
-  // ========== LESSONS ==========
-  getLessons(moduleId: number): Observable<Lesson[]> {
-    return this.http.get<Lesson[]>(`${this.baseUrl}/api/v1/lessons`, { params: { moduleId } });
-  }
-
-  getLesson(id: number): Observable<Lesson> {
-    return this.http.get<Lesson>(`${this.baseUrl}/api/v1/lessons/${id}`);
-  }
-
-  createLesson(lesson: Lesson): Observable<Lesson> {
-    return this.http.post<Lesson>(`${this.baseUrl}/api/v1/lessons`, lesson);
-  }
-
-  updateLesson(id: number, lesson: Lesson): Observable<Lesson> {
-    return this.http.put<Lesson>(`${this.baseUrl}/api/v1/lessons/${id}`, lesson);
-  }
-
-  deleteLesson(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/api/v1/lessons/${id}`);
-  }
-
-  // ========== REVIEWS ==========
-  getReviews(courseId: number, page = 0, size = 20): Observable<PageResponse<Review>> {
-    return this.http.get<PageResponse<Review>>(`${this.baseUrl}/api/v1/reviews`, {
-      params: { courseId, page: page.toString(), size: size.toString() }
-    });
-  }
-
-  createReview(review: Review): Observable<Review> {
-    return this.http.post<Review>(`${this.baseUrl}/api/v1/reviews`, review);
-  }
-
-  updateReview(id: number, review: Review): Observable<Review> {
-    return this.http.put<Review>(`${this.baseUrl}/api/v1/reviews/${id}`, review);
-  }
-
-  deleteReview(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/api/v1/reviews/${id}`);
-  }
-
-  assignTutor(courseId: number, tutorEmail: string): Observable<Course> {
-    return this.http.put<Course>(`${this.baseUrl}/api/v1/courses/${courseId}/assign-tutor`, { tutorEmail });
-  }
-
-  getCoursesByTutor(email: string): Observable<Course[]> {
-    return this.http.get<Course[]>(`${this.baseUrl}/api/v1/courses/by-tutor?email=${encodeURIComponent(email)}`);
-  }
+  assignTutor(courseId: number, _tutorEmail: string): Observable<Course> { return this.getCourse(courseId); }
+  getCoursesByTutor(_email: string): Observable<Course[]> { return of([..._courses].slice(0, 3)).pipe(delay(200)); }
 }

@@ -45,6 +45,9 @@ import { AdminClasses } from './pages/admin-classes/admin-classes';
 import { AdminParents } from './pages/admin-parents/admin-parents';
 import { TutorDashboard } from './pages/tutor-dashboard/tutor-dashboard';
 import { TutorAssessments } from './pages/tutor-assessments/tutor-assessments';
+import { TutorStudents } from './pages/tutor-students/tutor-students';
+import { TutorGradebook } from './pages/tutor-gradebook/tutor-gradebook';
+import { TutorAttendance } from './pages/tutor-attendance/tutor-attendance';
 
 // ── Student pages ─────────────────────────────────────────────────────────────
 import { StudentCoursesPage } from './pages/student/student-courses/student-courses';
@@ -110,14 +113,17 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { allowedRoles: ['TUTOR'] },
     children: [
-      { path: 'dashboard', component: TutorDashboard },
+      { path: 'dashboard',   component: TutorDashboard },
       { path: 'assessments', component: TutorAssessments },
       { path: 'assessment/:id', component: AssessmentDetails },
-      { path: 'planning', component: Planning },
-      { path: 'grades', component: GradesComponent },
-      { path: 'resources', component: Resources },
-      { path: 'reports', component: Reports },
-      { path: 'profile', component: Profile },
+      { path: 'students',    component: TutorStudents },
+      { path: 'gradebook',   component: TutorGradebook },
+      { path: 'attendance',  component: TutorAttendance },
+      { path: 'planning',    component: Planning },
+      { path: 'grades',      component: GradesComponent },
+      { path: 'resources',   component: Resources },
+      { path: 'reports',     component: Reports },
+      { path: 'profile',     component: Profile },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

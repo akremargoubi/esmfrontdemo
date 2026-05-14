@@ -1,82 +1,121 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { catchError, of, switchMap } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { FormsModule } from '@angular/forms';
+
+interface AttendanceRecord {
+  date: string;
+  status: 'PRESENT' | 'ABSENT' | 'LATE';
+  course?: string;
+  note?: string;
+}
+
+const MOCK_ATTENDANCE: AttendanceRecord[] = [
+  { date: '2026-05-01', status: 'PRESENT', course: 'English Grammar' },
+  { date: '2026-05-02', status: 'PRESENT', course: 'Oral Expression' },
+  { date: '2026-05-05', status: 'LATE',    course: 'English Grammar', note: 'Traffic' },
+  { date: '2026-05-06', status: 'PRESENT', course: 'Writing Skills' },
+  { date: '2026-05-07', status: 'ABSENT',  course: 'Oral Expression', note: 'Sick leave' },
+  { date: '2026-05-08', status: 'PRESENT', course: 'English Grammar' },
+  { date: '2026-05-09', status: 'PRESENT', course: 'Writing Skills' },
+  { date: '2026-04-28', status: 'PRESENT', course: 'English Grammar' },
+  { date: '2026-04-29', status: 'PRESENT', course: 'Oral Expression' },
+  { date: '2026-04-25', status: 'LATE',    course: 'Writing Skills' },
+  { date: '2026-04-24', status: 'ABSENT',  course: 'English Grammar', note: 'Family emergency' },
+  { date: '2026-04-23', status: 'PRESENT', course: 'Oral Expression' },
+  { date: '2026-04-22', status: 'PRESENT', course: 'Writing Skills' },
+  { date: '2026-04-21', status: 'PRESENT', course: 'English Grammar' },
+  { date: '2026-04-18', status: 'PRESENT', course: 'Oral Expression' },
+  { date: '2026-04-17', status: 'PRESENT', course: 'Writing Skills' },
+  { date: '2026-04-16', status: 'LATE',    course: 'English Grammar' },
+  { date: '2026-04-15', status: 'PRESENT', course: 'Oral Expression' },
+  { date: '2026-04-14', status: 'ABSENT',  course: 'Writing Skills', note: 'Sick leave' },
+  { date: '2026-04-11', status: 'PRESENT', course: 'English Grammar' },
+];
 
 @Component({
   selector: 'app-student-attendance',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div>
-      <h1 style="font-size:1.5rem;font-weight:700;color:#1e293b;margin-bottom:1.5rem;">My Attendance</h1>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;">
-        <div style="background:white;border-radius:12px;padding:1.25rem;border:1px solid #e2e8f0;text-align:center;">
-          <div style="font-size:1.75rem;font-weight:800;color:#22c55e;">{{ present }}</div>
-          <div style="font-size:0.8rem;color:#64748b;">Present</div>
-        </div>
-        <div style="background:white;border-radius:12px;padding:1.25rem;border:1px solid #e2e8f0;text-align:center;">
-          <div style="font-size:1.75rem;font-weight:800;color:#ef4444;">{{ absent }}</div>
-          <div style="font-size:0.8rem;color:#64748b;">Absent</div>
-        </div>
-        <div style="background:white;border-radius:12px;padding:1.25rem;border:1px solid #e2e8f0;text-align:center;">
-          <div style="font-size:1.75rem;font-weight:800;color:#f59e0b;">{{ late }}</div>
-          <div style="font-size:0.8rem;color:#64748b;">Late</div>
-        </div>
-        <div style="background:white;border-radius:12px;padding:1.25rem;border:1px solid #e2e8f0;text-align:center;">
-          <div style="font-size:1.75rem;font-weight:800;color:#6366f1;">{{ total }}</div>
-          <div style="font-size:0.8rem;color:#64748b;">Total</div>
-        </div>
-      </div>
-      <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;">
-        <div *ngIf="loading" style="text-align:center;padding:3rem;">Loading...</div>
-        <table *ngIf="!loading && records.length > 0" style="width:100%;border-collapse:collapse;">
-          <thead style="background:#f8fafc;"><tr>
-            <th style="padding:0.75rem 1rem;text-align:left;font-size:0.75rem;color:#64748b;">Date</th>
-            <th style="padding:0.75rem 1rem;text-align:left;font-size:0.75rem;color:#64748b;">Status</th>
-          </tr></thead>
-          <tbody>
-            <tr *ngFor="let r of records" style="border-top:1px solid #f1f5f9;">
-              <td style="padding:0.75rem 1rem;font-size:0.875rem;">{{ r.date }}</td>
-              <td style="padding:0.75rem 1rem;">
-                <span [style.background]="r.status==='PRESENT'?'#dcfce7':r.status==='ABSENT'?'#fee2e2':'#fef3c7'"
-                      [style.color]="r.status==='PRESENT'?'#15803d':r.status==='ABSENT'?'#dc2626':'#b45309'"
-                      style="padding:2px 8px;border-radius:99px;font-size:0.75rem;font-weight:600;">{{ r.status }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <div *ngIf="!loading && records.length === 0" style="text-align:center;padding:3rem;color:#94a3b8;">No records.</div>
-      </div>
-    </div>
-  `
+  imports: [CommonModule, FormsModule],
+  templateUrl: './student-attendance.html',
+  styleUrls: ['./student-attendance.css']
 })
 export class StudentAttendancePage implements OnInit {
-  records: any[] = [];
-  loading = true;
-  present = 0; absent = 0; late = 0; total = 0;
-  private api = environment.apiUrl;
-  constructor(private http: HttpClient) {}
+  allRecords: AttendanceRecord[] = [];
+  records: AttendanceRecord[] = [];
+  loading = false;
 
-  ngOnInit() {
-    this.http.get<any>(`${this.api}/api/users/me`).pipe(
-      catchError(() => of(null)),
-      switchMap(profile => {
-        if (profile?.email) {
-          return this.http.get<any[]>(`${this.api}/api/attendances/student/${encodeURIComponent(profile.email)}`).pipe(
-            catchError(() => this.http.get<any[]>(`${this.api}/api/attendances`).pipe(catchError(() => of([]))))
-          );
-        }
-        return this.http.get<any[]>(`${this.api}/api/attendances`).pipe(catchError(() => of([])));
-      })
-    ).subscribe((d: any) => {
-      this.records = d || [];
-      this.total = this.records.length;
-      this.present = this.records.filter((r: any) => r.status === 'PRESENT').length;
-      this.absent = this.records.filter((r: any) => r.status === 'ABSENT').length;
-      this.late = this.records.filter((r: any) => r.status === 'LATE').length;
+  present = 0;
+  absent  = 0;
+  late    = 0;
+  total   = 0;
+  attendanceRate = 0;
+
+  filterStatus = 'ALL';
+  filterMonth  = 'ALL';
+  availableMonths: string[] = [];
+
+  ngOnInit(): void {
+    this.loading = true;
+    setTimeout(() => {
+      this.allRecords = [...MOCK_ATTENDANCE].sort(
+        (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      this.computeMonths();
+      this.applyFilters();
       this.loading = false;
-    });
+    }, 600);
+  }
+
+  private computeMonths(): void {
+    const set = new Set<string>();
+    this.allRecords.forEach(r => set.add(r.date.substring(0, 7)));
+    this.availableMonths = Array.from(set).sort((a, b) => b.localeCompare(a));
+  }
+
+  applyFilters(): void {
+    let data = this.allRecords;
+    if (this.filterMonth !== 'ALL') {
+      data = data.filter(r => r.date.startsWith(this.filterMonth));
+    }
+    if (this.filterStatus !== 'ALL') {
+      data = data.filter(r => r.status === this.filterStatus);
+    }
+    this.records = data;
+    this.recompute(this.filterMonth === 'ALL' ? this.allRecords : this.allRecords.filter(r => r.date.startsWith(this.filterMonth)));
+  }
+
+  private recompute(source: AttendanceRecord[]): void {
+    this.total   = source.length;
+    this.present = source.filter(r => r.status === 'PRESENT').length;
+    this.absent  = source.filter(r => r.status === 'ABSENT').length;
+    this.late    = source.filter(r => r.status === 'LATE').length;
+    this.attendanceRate = this.total > 0
+      ? Math.round(((this.present + this.late * 0.5) / this.total) * 100)
+      : 0;
+  }
+
+  monthLabel(ym: string): string {
+    const [year, month] = ym.split('-');
+    return new Date(+year, +month - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+  }
+
+  statusColor(s: string): string {
+    return { PRESENT: '#15803d', ABSENT: '#dc2626', LATE: '#b45309' }[s] ?? '#64748b';
+  }
+
+  statusBg(s: string): string {
+    return { PRESENT: '#dcfce7', ABSENT: '#fee2e2', LATE: '#fef3c7' }[s] ?? '#f1f5f9';
+  }
+
+  rateColor(): string {
+    if (this.attendanceRate >= 80) return '#22c55e';
+    if (this.attendanceRate >= 60) return '#f59e0b';
+    return '#ef4444';
+  }
+
+  circumference = 2 * Math.PI * 40;
+
+  get dashOffset(): number {
+    return this.circumference * (1 - this.attendanceRate / 100);
   }
 }

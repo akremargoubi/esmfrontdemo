@@ -1,0 +1,207 @@
+<div class="ta-page">
+
+  <!-- ── Header ────────────────────────────────────────────────────── -->
+  <div class="ta-header">
+    <div>
+      <h1 class="ta-title">Attendance</h1>
+      <p class="ta-sub">Record attendance for your classes</p>
+    </div>
+    @if (saved) {
+      <div class="ta-saved-banner">
+        <mat-icon>check_circle</mat-icon> Attendance saved!
+      </div>
+    }
+  </div>
+
+  <!-- ── Controls ──────────────────────────────────────────────────── -->
+  <div class="ta-controls">
+    <div class="ta-control-group">
+      <label class="ta-label">Class</label>
+      <select class="ta-select" [(ngModel)]="selectedClass" (change)="loadStudents(); buildWeekSummary()">
+        @for (c of myClasses; track c.id) {
+          <option [value]="c.name">{{ c.name }} — {{ c.specialty }}</option>
+        }
+      </select>
+    </div>
+    <div class="ta-control-group">
+      <label class="ta-label">Date</label>
+      <input type="date" class="ta-select" [(ngModel)]="selectedDate" (change)="loadStudents()" />
+    </div>
+    <div class="ta-control-group" style="flex-direction:row;gap:.5rem;align-items:flex-end">
+      <button class="ta-view-btn" [class.active]="viewMode==='daily'" (click)="viewMode='daily'">
+        <mat-icon>today</mat-icon> Daily
+      </button>
+      <button class="ta-view-btn" [class.active]="viewMode==='weekly'" (click)="viewMode='weekly'">
+        <mat-icon>calendar_view_week</mat-icon> Weekly
+      </button>
+    </div>
+    @if (todayCourse) {
+      <div class="ta-course-info">
+        <mat-icon>schedule</mat-icon> {{ todayCourse }}
+      </div>
+    }
+  </div>
+
+  @if (viewMode === 'weekly') {
+    <!-- ── Weekly Summary ──────────────────────────────────────────── -->
+    <div class="ta-week-card">
+      <h3 style="font-size:.8rem;font-weight:700;color:#64748b;margin:0 0 .75rem;text-transform:uppercase;letter-spacing:.05em">
+        <mat-icon style="font-size:14px;width:14px;height:14px">assessment</mat-icon> Weekly Attendance Summary
+      </h3>
+      <div class="ta-week-grid">
+        @for (day of weekSummary; track day.date) {
+          <div class="ta-week-day" [class.ta-week-today]="isToday(day.date)">
+            <div class="ta-week-label">{{ formatDay(day.date) }}</div>
+            <div class="ta-week-date">{{ day.date | date:'dd/MM' }}</div>
+            @if (day.total > 0) {
+              <div class="ta-week-chart">
+                @if (day.present > 0) {
+                  <div class="ta-week-bar present"
+                       [style.height.%]="(day.present / day.total) * 100"
+                       [title]="day.present + ' present'"></div>
+                }
+                @if (day.late > 0) {
+                  <div class="ta-week-bar late"
+                       [style.height.%]="(day.late / day.total) * 100"
+                       [title]="day.late + ' late'"></div>
+                }
+                @if (day.absent > 0) {
+                  <div class="ta-week-bar absent"
+                       [style.height.%]="(day.absent / day.total) * 100"
+                       [title]="day.absent + ' absent'"></div>
+                }
+              </div>
+              <div class="ta-week-total">{{ day.present }}/{{ day.total }}</div>
+            } @else {
+              <div class="ta-week-empty">—</div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  @if (viewMode === 'daily') {
+    <!-- ── Quick Stats ────────────────────────────────────────────────── -->
+    <div class="ta-stats-row">
+      <div class="ta-stat" style="border-left-color:#22c55e">
+        <span class="ta-stat-num" style="color:#16a34a">{{ presentCount }}</span>
+        <span class="ta-stat-lbl">Present</span>
+      </div>
+      <div class="ta-stat" style="border-left-color:#f59e0b">
+        <span class="ta-stat-num" style="color:#d97706">{{ lateCount }}</span>
+        <span class="ta-stat-lbl">Late</span>
+      </div>
+      <div class="ta-stat" style="border-left-color:#ef4444">
+        <span class="ta-stat-num" style="color:#dc2626">{{ absentCount }}</span>
+        <span class="ta-stat-lbl">Absent</span>
+      </div>
+      <div class="ta-stat" style="border-left-color:#6366f1">
+        <span class="ta-stat-num" style="color:#6366f1">{{ students.length }}</span>
+        <span class="ta-stat-lbl">Total</span>
+      </div>
+    </div>
+
+    <!-- ── Visual Distribution ───────────────────────────────────────── -->
+    @if (students.length > 0) {
+      <div class="ta-dist-bar">
+        @if (presentCount > 0) {
+          <div class="ta-dist-seg present" [style.width.%]="(presentCount / students.length) * 100"
+               [title]="presentCount + ' present'"></div>
+        }
+        @if (lateCount > 0) {
+          <div class="ta-dist-seg late" [style.width.%]="(lateCount / students.length) * 100"
+               [title]="lateCount + ' late'"></div>
+        }
+        @if (absentCount > 0) {
+          <div class="ta-dist-seg absent" [style.width.%]="(absentCount / students.length) * 100"
+               [title]="absentCount + ' absent'"></div>
+        }
+      </div>
+    }
+
+    <!-- ── Bulk Actions ───────────────────────────────────────────────── -->
+    <div class="ta-bulk-bar">
+      <span class="ta-bulk-label">Mark all as:</span>
+      <button class="ta-bulk-btn present" (click)="markAll('PRESENT')">
+        <mat-icon>check_circle</mat-icon> All Present
+      </button>
+      <button class="ta-bulk-btn late" (click)="markAll('LATE')">
+        <mat-icon>schedule</mat-icon> All Late
+      </button>
+      <button class="ta-bulk-btn absent" (click)="markAll('ABSENT')">
+        <mat-icon>cancel</mat-icon> All Absent
+      </button>
+      <button class="ta-save-btn" (click)="save()" [disabled]="saving || students.length === 0">
+        <mat-icon>save</mat-icon> {{ saving ? 'Saving…' : 'Save' }}
+      </button>
+    </div>
+
+    <!-- ── Student List ───────────────────────────────────────────────── -->
+    @if (students.length === 0) {
+      <div class="ta-empty">
+        <mat-icon>people_outline</mat-icon>
+        <p>No students found for this class.</p>
+      </div>
+    }
+
+    <div class="ta-student-list">
+      @for (s of students; track s.id) {
+        <div class="ta-student-row" [class.row-present]="records[s.id] === 'PRESENT'"
+                                    [class.row-late]="records[s.id] === 'LATE'"
+                                    [class.row-absent]="records[s.id] === 'ABSENT'">
+          <div class="ta-student-info">
+            <div class="ta-avatar" [style.background]="statusColor(records[s.id]) + '20'"
+                 [style.color]="statusColor(records[s.id])">
+              {{ s.firstName[0] }}{{ s.lastName[0] }}
+            </div>
+            <div>
+              <div class="ta-student-name">{{ s.firstName }} {{ s.lastName }}</div>
+              <div class="ta-student-email">{{ s.email }}</div>
+            </div>
+          </div>
+
+          <div class="ta-prev-att">
+            @for (a of prevAttendance(s.id); track a.id) {
+              <span class="ta-prev-dot"
+                    [title]="a.date | date:'dd/MM' + ' — ' + a.status"
+                    [style.background]="statusColor(a.status)">
+              </span>
+            }
+          </div>
+
+          <div class="ta-status-btns">
+            <button class="ta-status-btn present"
+                    [class.active]="records[s.id] === 'PRESENT'"
+                    (click)="setStatus(s.id, 'PRESENT')">
+              <mat-icon>check_circle</mat-icon> Present
+            </button>
+            <button class="ta-status-btn late"
+                    [class.active]="records[s.id] === 'LATE'"
+                    (click)="setStatus(s.id, 'LATE')">
+              <mat-icon>schedule</mat-icon> Late
+            </button>
+            <button class="ta-status-btn absent"
+                    [class.active]="records[s.id] === 'ABSENT'"
+                    (click)="setStatus(s.id, 'ABSENT')">
+              <mat-icon>cancel</mat-icon> Absent
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- ── Bottom Save ────────────────────────────────────────────────── -->
+    @if (students.length > 0) {
+      <div class="ta-bottom-bar">
+        <span class="ta-bottom-summary">
+          {{ presentCount }} present · {{ lateCount }} late · {{ absentCount }} absent
+        </span>
+        <button class="ta-save-btn" (click)="save()" [disabled]="saving">
+          <mat-icon>save</mat-icon> {{ saving ? 'Saving…' : 'Save Attendance' }}
+        </button>
+      </div>
+    }
+  }
+
+</div>

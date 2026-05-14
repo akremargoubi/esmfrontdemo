@@ -1,25 +1,31 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
+import { MOCK_PLANNING, MOCK_ASSESSMENTS } from '../core/mock/mock-data';
 import { Assessment } from './assessment.service';
-import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class PlanningService {
 
-  private api = `${environment.apiUrl}/api/planning`;
-
-  constructor(private http: HttpClient) { }
-
-  getCalendar(year: number, month: number): Observable<Assessment[]> {
-    return this.http.get<Assessment[]>(`${this.api}/calendar?year=${year}&month=${month}`);
+  getCalendar(_year: number, _month: number): Observable<any[]> {
+    return of([...MOCK_PLANNING, ...MOCK_ASSESSMENTS.filter(a => a.startDate)]).pipe(delay(250));
   }
 
   getUpcoming(): Observable<Assessment[]> {
-    return this.http.get<Assessment[]>(`${this.api}/upcoming`);
+    const now = Date.now();
+    return of(MOCK_ASSESSMENTS.filter(a => a.startDate && new Date(a.startDate).getTime() > now) as Assessment[]).pipe(delay(200));
   }
 
   getOngoing(): Observable<Assessment[]> {
-    return this.http.get<Assessment[]>(`${this.api}/ongoing`);
+    const now = Date.now();
+    return of(MOCK_ASSESSMENTS.filter(a =>
+      a.startDate && a.endDate &&
+      new Date(a.startDate).getTime() <= now &&
+      new Date(a.endDate).getTime() >= now
+    ) as Assessment[]).pipe(delay(200));
+  }
+
+  getAll(): Observable<any[]> {
+    return of([...MOCK_PLANNING]).pipe(delay(250));
   }
 }

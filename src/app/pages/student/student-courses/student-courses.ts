@@ -1,10 +1,9 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { catchError, of, forkJoin, switchMap } from 'rxjs';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { environment } from '../../../../environments/environment';
+import { MOCK_ENROLLMENTS, MOCK_STUDENTS, MOCK_CREDENTIALS } from '../../../core/mock/mock-data';
+import { COURSES } from '../../../data/courses.data';
 
 @Component({
   selector: 'app-student-courses',
@@ -13,6 +12,9 @@ import { environment } from '../../../../environments/environment';
   templateUrl: './student-courses.html'
 })
 export class StudentCoursesPage implements OnInit {
+  private auth = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+
   enrolledCourses: any[] = [];
   availableCourses: any[] = [];
   loading = true;
@@ -20,94 +22,66 @@ export class StudentCoursesPage implements OnInit {
   levels = ['ALL', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
   activeTab: 'enrolled' | 'browse' = 'enrolled';
 
-  userUuid = '';
   studentName = '';
-  walletBalance = 0;
+  studentId = 0;
 
   enrollingCourseId: number | null = null;
   enrollSuccess = '';
   enrollError = '';
 
-  private api = environment.apiUrl;
-
-  constructor(
-    private http: HttpClient,
-    private auth: AuthService,
-    private cdr: ChangeDetectorRef
-  ) {}
-
   ngOnInit(): void {
-    this.userUuid = this.auth.getUserId() || '';
-    this.loadProfile();
+    const email = this.auth.getEmail() ?? 'student@fluencity.com';
+    const profile = MOCK_STUDENTS.find(s => s.email === email) ?? MOCK_STUDENTS[0];
+    this.studentId = profile.id;
+    this.studentName = `${profile.firstName} ${profile.lastName}`;
+    this.loadData();
   }
 
-  loadProfile(): void {
-    this.http.get<any>(`${this.api}/api/users/me`).pipe(
-      catchError(() => of(null))
-    ).subscribe(profile => {
-      if (profile) {
-        this.studentName = `${profile.firstName || ''} ${profile.lastName || ''}`.trim() || profile.email;
-        this.walletBalance = profile.walletBalance ?? 0;
-      }
-      this.loadData();
-    });
+  private getLevel(course: any): string {
+    const map: Record<string, string> = { 'Beginner': 'A2', 'Intermediate': 'B1', 'Advanced': 'C1' };
+    return map[course.level] ?? 'B1';
   }
 
   loadData(): void {
     this.loading = true;
-    forkJoin({
-      enrolled: this.userUuid
-        ? this.http.get<any[]>(`${this.api}/api/v1/enrollments/user/${this.userUuid}/my-courses`).pipe(catchError(() => of([])))
-        : of([]),
-      courses: this.http.get<any>(`${this.api}/api/v1/courses?isPublished=true&size=100`).pipe(catchError(() => of({ content: [] })))
-    }).subscribe(({ enrolled, courses }) => {
-      this.enrolledCourses = enrolled || [];
-      const allCourses: any[] = (courses as any)?.content || (Array.isArray(courses) ? courses : []);
-      const enrolledIds = new Set((enrolled || []).map((e: any) => e.courseId));
-      this.availableCourses = allCourses.filter(c => !enrolledIds.has(c.courseId));
-      this.loading = false;
-      this.cdr.detectChanges();
-    });
+    const enrolledIds: number[] = [];
+    this.enrolledCourses = MOCK_ENROLLMENTS
+      .filter(e => e.studentId === this.studentId)
+      .map(e => {
+        const course = COURSES.find(c => c.id === e.courseId);
+        enrolledIds.push(e.courseId);
+        return { ...e, course, progressPercent: e.progress, level: course ? this.getLevel(course) : 'B1' };
+      });
+    this.availableCourses = COURSES
+      .filter(c => !enrolledIds.includes(c.id))
+      .map(c => ({ courseId: c.id, imageUrl: c.image, price: c.price === 'Free' ? 0 : parseInt((c.price ?? '$0').replace(/[^0-9]/g, '')) || 0, ...c, level: this.getLevel(c) }));
+    this.loading = false;
+    this.cdr.detectChanges();
   }
 
   enroll(course: any): void {
-    if (!this.userUuid) {
-      this.enrollError = 'Not logged in.';
-      return;
-    }
     this.enrollingCourseId = course.courseId;
     this.enrollError = '';
     this.enrollSuccess = '';
     this.cdr.detectChanges();
 
-    const idempotencyKey = `enroll-${this.userUuid}-${course.courseId}-${Date.now()}`;
-    const body = {
-      userUuid: this.userUuid,
+    MOCK_ENROLLMENTS.push({
+      id: MOCK_ENROLLMENTS.length + 1,
+      studentId: this.studentId,
       studentName: this.studentName,
       courseId: course.courseId,
-      status: 'active'
-    };
-
-    this.http.post<any>(`${this.api}/api/v1/enrollments`, body, {
-      headers: new HttpHeaders({ 'X-Idempotency-Key': idempotencyKey })
-    }).pipe(
-      catchError(err => {
-        const msg = err?.error?.message || err?.message || '';
-        this.enrollError = msg.toLowerCase().includes('wallet') || msg.toLowerCase().includes('balance')
-          ? 'Insufficient wallet balance. Please ask your parent to top up your wallet.'
-          : (msg || 'Enrollment failed. Please try again.');
-        this.enrollingCourseId = null;
-        this.cdr.detectChanges();
-        return of(null);
-      })
-    ).subscribe(result => {
-      if (result) {
-        this.enrollSuccess = `Successfully enrolled in "${course.title || course.name}"!`;
-        this.enrollingCourseId = null;
-        this.loadData();
-        setTimeout(() => { this.enrollSuccess = ''; this.cdr.detectChanges(); }, 4000);
-      }
+      courseName: course.title || course.name,
+      status: 'ACTIVE',
+      enrolledAt: new Date().toISOString(),
+      progress: 0,
     });
+
+    setTimeout(() => {
+      this.enrollSuccess = `Successfully enrolled in "${course.title || course.name}"!`;
+      this.enrollingCourseId = null;
+      this.loadData();
+      setTimeout(() => { this.enrollSuccess = ''; this.cdr.detectChanges(); }, 4000);
+    }, 500);
   }
 
   get filteredAvailable(): any[] {

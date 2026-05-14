@@ -1,0 +1,312 @@
+<div class="ts-page">
+
+  <!-- ── Header ────────────────────────────────────────────────────── -->
+  <div class="ts-header">
+    <div>
+      <h1 class="ts-title">My Students</h1>
+      <p class="ts-sub">{{ filtered.length }} student{{ filtered.length !== 1 ? 's' : '' }} across {{ myClasses.length }} class{{ myClasses.length !== 1 ? 'es' : '' }}</p>
+    </div>
+    <div class="ts-header-actions">
+      <a routerLink="/tutor/gradebook" class="ts-btn-secondary">
+        <mat-icon>menu_book</mat-icon> Grade Book
+      </a>
+      <a routerLink="/tutor/attendance" class="ts-btn-primary">
+        <mat-icon>fact_check</mat-icon> Take Attendance
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Class KPI tabs ────────────────────────────────────────────── -->
+  <div class="ts-class-tabs">
+    <button class="ts-class-tab" [class.active]="selectedClass === 'ALL'" (click)="selectedClass='ALL'; applyFilters()">
+      All Classes
+      <span class="ts-tab-count">{{ allStudents.length }}</span>
+    </button>
+    @for (c of myClasses; track c.id) {
+      <button class="ts-class-tab" [class.active]="selectedClass === c.name"
+              (click)="selectedClass = c.name; applyFilters()">
+        {{ c.name }}
+        <span class="ts-tab-count">{{ countInClass(c.name) }}</span>
+        <span class="ts-tab-pill">{{ c.level }}</span>
+      </button>
+    }
+  </div>
+
+  <!-- ── Filters ───────────────────────────────────────────────────── -->
+  <div class="ts-filters">
+    <input type="text" class="ts-search" [(ngModel)]="searchTerm" (input)="applyFilters()"
+           placeholder="Search by name or email…" />
+    <select class="ts-select" [(ngModel)]="sortBy" (change)="applyFilters()">
+      <option value="name">Sort: Name</option>
+      <option value="grade">Sort: Top Grades</option>
+      <option value="att">Sort: Attendance</option>
+      <option value="risk">Sort: At Risk</option>
+    </select>
+    <span class="ts-count">{{ filtered.length }} result(s)</span>
+  </div>
+
+  <!-- ── Student Grid ───────────────────────────────────────────────── -->
+  <div class="ts-grid">
+    @for (s of filtered; track s.id) {
+      <div class="ts-card" (click)="openDetail(s)">
+        <div class="ts-card-top">
+          <div class="ts-avatar">{{ s.firstName[0] }}{{ s.lastName[0] }}</div>
+          <div class="ts-name-block">
+            <div class="ts-student-name">{{ s.firstName }} {{ s.lastName }}</div>
+            <div class="ts-student-email">{{ s.email }}</div>
+          </div>
+          <span class="ts-class-chip">{{ s.className }}</span>
+        </div>
+
+        @if (s.riskLevel) {
+          <div class="ts-risk-banner"
+               [style.background]="riskBg(s.riskLevel)"
+               [style.color]="riskColor(s.riskLevel)">
+            <mat-icon style="font-size:14px;width:14px;height:14px">warning</mat-icon>
+            {{ s.riskLevel }} risk · {{ (s.predictedDropout * 100 | number:'1.0-0') }}% dropout probability
+          </div>
+        }
+
+        <!-- Strengths / Weaknesses -->
+        <div class="ts-sw-row">
+          <div class="ts-sw-group">
+            <span class="ts-sw-label" style="color:#16a34a">Strengths</span>
+            <span class="ts-sw-tags">
+              @for (st of s.strengths.slice(0, 2); track st) {
+                <span class="ts-tag ts-tag-green">{{ st }}</span>
+              }
+            </span>
+          </div>
+          <div class="ts-sw-group">
+            <span class="ts-sw-label" style="color:#dc2626">Weaknesses</span>
+            <span class="ts-sw-tags">
+              @for (w of s.weaknesses.slice(0, 2); track w) {
+                <span class="ts-tag ts-tag-red">{{ w }}</span>
+              }
+            </span>
+          </div>
+        </div>
+
+        <div class="ts-metrics">
+          <div class="ts-metric">
+            <div class="ts-metric-label">Avg Grade</div>
+            <div class="ts-metric-val" [style.color]="gradeColor(s.avgScore)">
+              {{ s.avgScore > 0 ? s.avgScore : '—' }}
+            </div>
+            @if (s.avgScore > 0) {
+              <div class="ts-bar-track">
+                <div class="ts-bar-fill" [style.width.%]="s.avgScore" [style.background]="gradeBarColor(s.avgScore)"></div>
+              </div>
+            }
+          </div>
+          <div class="ts-metric">
+            <div class="ts-metric-label">Attendance</div>
+            <div class="ts-metric-val" [style.color]="gradeColor(s.attRate)">
+              {{ s.att.length > 0 ? s.attRate + '%' : '—' }}
+            </div>
+            @if (s.att.length > 0) {
+              <div class="ts-bar-track">
+                <div class="ts-bar-fill" [style.width.%]="s.attRate" [style.background]="gradeBarColor(s.attRate)"></div>
+              </div>
+            }
+          </div>
+          <div class="ts-metric">
+            <div class="ts-metric-label">Tests</div>
+            <div class="ts-metric-val" style="color:#6366f1">{{ s.grades.length }}</div>
+          </div>
+        </div>
+
+        <div class="ts-card-footer">
+          <span class="ts-wallet">
+            <mat-icon style="font-size:13px;width:13px;height:13px">account_balance_wallet</mat-icon>
+            {{ s.walletBalance }} TND
+          </span>
+          <button class="ts-detail-btn" (click)="openDetail(s); $event.stopPropagation()">
+            View Profile <mat-icon style="font-size:13px;width:13px;height:13px">arrow_forward</mat-icon>
+          </button>
+        </div>
+      </div>
+    } @empty {
+      <div class="ts-empty">
+        <mat-icon>people_outline</mat-icon>
+        <p>No students found.</p>
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- ── Student Detail Modal ──────────────────────────────────────────── -->
+@if (showDetail && selectedStudent) {
+  <div class="ts-modal-overlay" (click)="closeDetail()">
+    <div class="ts-modal" (click)="$event.stopPropagation()">
+      <div class="ts-modal-head">
+        <div class="ts-modal-avatar">{{ selectedStudent.firstName[0] }}{{ selectedStudent.lastName[0] }}</div>
+        <div>
+          <h2 class="ts-modal-name">{{ selectedStudent.firstName }} {{ selectedStudent.lastName }}</h2>
+          <div class="ts-modal-meta">{{ selectedStudent.email }} · {{ selectedStudent.className }}</div>
+        </div>
+        <button class="ts-modal-close" (click)="closeDetail()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="ts-modal-body">
+        <!-- Quick stats -->
+        <div class="ts-modal-stats">
+          <div class="ts-modal-stat">
+            <div class="ts-modal-stat-val" [style.color]="gradeColor(selectedStudent.avgScore)">
+              {{ selectedStudent.avgScore || '—' }}
+            </div>
+            <div class="ts-modal-stat-lbl">Avg Score</div>
+          </div>
+          <div class="ts-modal-stat">
+            <div class="ts-modal-stat-val" [style.color]="gradeColor(selectedStudent.attRate)">
+              {{ selectedStudent.att.length > 0 ? selectedStudent.attRate + '%' : '—' }}
+            </div>
+            <div class="ts-modal-stat-lbl">Attendance</div>
+          </div>
+          <div class="ts-modal-stat">
+            <div class="ts-modal-stat-val" style="color:#6366f1">{{ selectedStudent.grades.length }}</div>
+            <div class="ts-modal-stat-lbl">Assessments</div>
+          </div>
+          <div class="ts-modal-stat">
+            <div class="ts-modal-stat-val" style="color:#64748b">{{ selectedStudent.walletBalance }}</div>
+            <div class="ts-modal-stat-lbl">TND Balance</div>
+          </div>
+        </div>
+
+        <!-- AI Risk & Trends -->
+        @if (selectedStudent.riskLevel) {
+          <div class="ts-risk-banner ts-risk-modal"
+               [style.background]="riskBg(selectedStudent.riskLevel)"
+               [style.color]="riskColor(selectedStudent.riskLevel)">
+            <mat-icon style="font-size:16px;width:16px;height:16px">warning</mat-icon>
+            AI Risk Alert: {{ selectedStudent.riskLevel }} — {{ (selectedStudent.predictedDropout * 100 | number:'1.0-0') }}% dropout probability
+          </div>
+        }
+
+        @if (selectedStudent.trend) {
+          <div class="ts-insight-row">
+            <div class="ts-insight-card">
+              <span class="ts-insight-icon">
+                <mat-icon style="font-size:18px;width:18px;height:18px">trending_up</mat-icon>
+              </span>
+              <div>
+                <div class="ts-insight-label">Performance Trend</div>
+                <div class="ts-insight-value" [style.color]="selectedStudent.trend === 'IMPROVING' ? '#16a34a' : selectedStudent.trend === 'DECLINING' ? '#dc2626' : '#6366f1'">
+                  {{ selectedStudent.trend }}
+                </div>
+              </div>
+            </div>
+            @if (selectedStudent.predictedGrade) {
+              <div class="ts-insight-card">
+                <span class="ts-insight-icon" style="background:#ede9fe;color:#7c3aed">
+                  <mat-icon style="font-size:18px;width:18px;height:18px">auto_graph</mat-icon>
+                </span>
+                <div>
+                  <div class="ts-insight-label">Predicted Grade</div>
+                  <div class="ts-insight-value" style="color:#7c3aed">{{ selectedStudent.predictedGrade }}/100</div>
+                </div>
+              </div>
+            }
+            @if (selectedStudent.confidence) {
+              <div class="ts-insight-card">
+                <span class="ts-insight-icon" style="background:#dbeafe;color:#1d4ed8">
+                  <mat-icon style="font-size:18px;width:18px;height:18px">analytics</mat-icon>
+                </span>
+                <div>
+                  <div class="ts-insight-label">AI Confidence</div>
+                  <div class="ts-insight-value" style="color:#1d4ed8">{{ (selectedStudent.confidence * 100 | number:'1.0-0') }}%</div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Strengths & Weaknesses -->
+        <div style="display:flex;gap:1rem;margin:.875rem 0">
+          <div style="flex:1;background:#f0fdf4;border-radius:8px;padding:.75rem">
+            <div style="font-size:.7rem;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.375rem">Strengths</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap">
+              @for (st of selectedStudent.strengths; track st) {
+                <span style="background:#dcfce7;color:#16a34a;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600">{{ st }}</span>
+              }
+            </div>
+          </div>
+          <div style="flex:1;background:#fef2f2;border-radius:8px;padding:.75rem">
+            <div style="font-size:.7rem;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.375rem">Weaknesses</div>
+            <div style="display:flex;gap:4px;flex-wrap:wrap">
+              @for (w of selectedStudent.weaknesses; track w) {
+                <span style="background:#fee2e2;color:#dc2626;border-radius:4px;padding:2px 7px;font-size:.72rem;font-weight:600">{{ w }}</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Intervention -->
+        @if (selectedStudent.intervention) {
+          <div class="ts-intervention-card">
+            <mat-icon style="font-size:16px;width:16px;height:16px;color:#6366f1">auto_awesome</mat-icon>
+            <span><strong>AI Recommendation:</strong> {{ selectedStudent.intervention }}</span>
+          </div>
+        }
+
+        <!-- Grades history -->
+        @if (selectedStudent.grades.length > 0) {
+          <h3 class="ts-modal-section-title">Grade History</h3>
+          <div class="ts-grade-list">
+            @for (g of selectedStudent.grades; track g.id) {
+              <div class="ts-grade-row">
+                <div class="ts-grade-name">{{ g.assessmentTitle }}</div>
+                <div class="ts-grade-score">
+                  <div class="ts-grade-bar-track">
+                    <div class="ts-grade-bar-fill"
+                         [style.width.%]="(g.score / g.maxScore) * 100"
+                         [style.background]="gradeBarColor(g.score)"></div>
+                  </div>
+                  <strong [style.color]="gradeColor(g.score)">{{ g.score }}/{{ g.maxScore }}</strong>
+                  <span class="ts-grade-letter">{{ g.grade }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Attendance history -->
+        @if (selectedStudent.att.length > 0) {
+          <h3 class="ts-modal-section-title">Attendance Records</h3>
+          <div class="ts-att-chips">
+            @for (a of selectedStudent.att; track a.id) {
+              <span class="ts-att-chip"
+                    [class.att-present]="a.status === 'PRESENT'"
+                    [class.att-late]="a.status === 'LATE'"
+                    [class.att-absent]="a.status === 'ABSENT'">
+                {{ a.date | date:'dd/MM' }} · {{ a.status }}
+              </span>
+            }
+          </div>
+        }
+
+        <!-- Tutor Note -->
+        <h3 class="ts-modal-section-title">Tutor Notes</h3>
+        <textarea class="ts-note-input" rows="3" [(ngModel)]="noteText"
+          placeholder="Add a private note about this student…"></textarea>
+        <div style="display:flex;gap:.5rem;align-items:center;margin-top:.625rem">
+          <button class="ts-save-note-btn" (click)="saveNote()">
+            <mat-icon style="font-size:14px;width:14px;height:14px">save</mat-icon> Save Note
+          </button>
+          @if (noteSaved) {
+            <span style="color:#16a34a;font-size:.8rem;font-weight:600">Saved!</span>
+          }
+        </div>
+
+        <!-- Communication -->
+        <h3 class="ts-modal-section-title">Communication</h3>
+        <button class="ts-btn-secondary" style="width:100%;justify-content:center" (click)="sendMessage(selectedStudent)">
+          <mat-icon style="font-size:16px;width:16px;height:16px">send</mat-icon> Send Message to Parent
+        </button>
+      </div>
+    </div>
+  </div>
+}

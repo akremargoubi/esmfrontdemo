@@ -127,11 +127,13 @@ export class Signin {
 
   quickLogin(role: string): void {
     const creds: Record<string, { email: string; password: string }> = {
-      ADMIN:   { email: 'admin@test.com',   password: 'admin123'   },
-      STUDENT: { email: 'student@test.com', password: 'student123' },
-      PARENT:  { email: 'parent@test.com',  password: 'parent123'  }
+      ADMIN:   { email: 'admin@fluencity.com',   password: 'demo123' },
+      TUTOR:   { email: 'tutor@fluencity.com',   password: 'demo123' },
+      STUDENT: { email: 'student@fluencity.com', password: 'demo123' },
+      PARENT:  { email: 'parent@fluencity.com',  password: 'demo123' },
     };
-    this.email = creds[role].email;
+    if (!creds[role]) return;
+    this.email    = creds[role].email;
     this.password = creds[role].password;
     this.login();
   }

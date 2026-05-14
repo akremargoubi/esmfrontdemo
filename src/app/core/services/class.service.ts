@@ -1,86 +1,75 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
+import { MOCK_CLASSES, MOCK_STUDENTS } from '../mock/mock-data';
 
 export interface StudentSummary {
-  id: string;
-  firstName: string | null;
-  lastName: string | null;
-  email: string;
-  cin: string | null;
-  avatarUrl: string | null;
+  id: string; firstName: string | null; lastName: string | null;
+  email: string; cin?: string | null; avatarUrl?: string | null;
 }
 
 export interface ClassResponse {
-  id: number;
-  name: string;
-  level: string | null;
-  specialty: string | null;
-  description: string | null;
-  createdAt: string;
-  tutorId: string | null;
-  tutorFirstName: string | null;
-  tutorLastName: string | null;
-  tutorEmail: string | null;
-  studentCount: number;
-  students: StudentSummary[];
+  id: number; name: string; level: string | null; specialty: string | null;
+  description?: string | null; createdAt?: string; tutorId?: string | null;
+  tutorFirstName?: string | null; tutorLastName?: string | null; tutorEmail?: string | null;
+  studentCount: number; students?: StudentSummary[];
 }
 
-export interface ClassCreateRequest {
-  name: string;
-  level?: string | null;
-  specialty?: string | null;
-  description?: string | null;
-  tutorId?: string | null;
-}
+export interface ClassCreateRequest { name: string; level?: string | null; specialty?: string | null; description?: string | null; tutorId?: string | null; }
+export interface ClassUpdateRequest { name?: string; level?: string | null; specialty?: string | null; description?: string | null; tutorId?: string | null; }
 
-export interface ClassUpdateRequest {
-  name?: string;
-  level?: string | null;
-  specialty?: string | null;
-  description?: string | null;
-  tutorId?: string | null;
-}
+let _classes: ClassResponse[] = MOCK_CLASSES.map(c => ({
+  ...c, description: null, createdAt: new Date().toISOString(),
+  tutorFirstName: c.tutorName.split(' ')[0],
+  tutorLastName: c.tutorName.split(' ')[1] ?? '',
+  tutorEmail: `${c.tutorName.toLowerCase().replace(' ', '.')}@fluencity.com`,
+  students: MOCK_STUDENTS.filter(s => s.className === c.name).map(s => ({
+    id: String(s.id), firstName: s.firstName, lastName: s.lastName, email: s.email,
+  })),
+}));
 
 @Injectable({ providedIn: 'root' })
 export class ClassService {
-  private readonly API = `${environment.apiUrl}/api/classes`;
-  private http = inject(HttpClient);
 
-  listClasses(): Observable<ClassResponse[]> {
-    return this.http.get<ClassResponse[]>(this.API);
-  }
+  listClasses(): Observable<ClassResponse[]> { return of([..._classes]).pipe(delay(250)); }
 
   getClass(id: number): Observable<ClassResponse> {
-    return this.http.get<ClassResponse>(`${this.API}/${id}`);
+    return of(_classes.find(c => c.id === id) ?? _classes[0]).pipe(delay(200));
   }
 
   createClass(body: ClassCreateRequest): Observable<ClassResponse> {
-    return this.http.post<ClassResponse>(this.API, body);
+    const created: ClassResponse = {
+      id: Math.max(..._classes.map(c => c.id)) + 1,
+      name: body.name, level: body.level ?? null, specialty: body.specialty ?? null,
+      studentCount: 0, students: [], createdAt: new Date().toISOString(),
+    };
+    _classes = [..._classes, created];
+    return of(created).pipe(delay(500));
   }
 
   updateClass(id: number, body: ClassUpdateRequest): Observable<ClassResponse> {
-    return this.http.put<ClassResponse>(`${this.API}/${id}`, body);
+    _classes = _classes.map(c => c.id === id ? { ...c, ...body } : c);
+    return of(_classes.find(c => c.id === id)!).pipe(delay(400));
   }
 
   deleteClass(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.API}/${id}`);
+    _classes = _classes.filter(c => c.id !== id);
+    return of(undefined).pipe(delay(300));
   }
 
   assignStudent(classId: number, userId: string): Observable<ClassResponse> {
-    return this.http.put<ClassResponse>(`${this.API}/${classId}/students/${userId}`, {});
+    return this.getClass(classId);
   }
 
   removeStudent(classId: number, userId: string): Observable<ClassResponse> {
-    return this.http.delete<ClassResponse>(`${this.API}/${classId}/students/${userId}`);
+    return this.getClass(classId);
   }
 
   assignTutor(classId: number, tutorId: string): Observable<ClassResponse> {
-    return this.http.put<ClassResponse>(`${this.API}/${classId}/tutor/${tutorId}`, {});
+    return this.getClass(classId);
   }
 
   removeTutor(classId: number): Observable<ClassResponse> {
-    return this.http.delete<ClassResponse>(`${this.API}/${classId}/tutor`);
+    return this.getClass(classId);
   }
 }

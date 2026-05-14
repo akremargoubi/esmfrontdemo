@@ -1,0 +1,148 @@
+/* Shared layout styles for all role shells */
+.app-shell {
+  display: flex;
+  height: 100vh;
+  background: #f1f5f9;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow: hidden;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 39;
+}
+@media (max-width: 768px) {
+  .sidebar-overlay { display: none; }
+  .app-shell.sidebar-open .sidebar-overlay { display: block; }
+}
+
+.sidebar {
+  width: 240px;
+  background: #0f172a;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  overflow: hidden;
+  z-index: 40;
+  transition: transform 0.25s ease;
+}
+@media (max-width: 768px) {
+  .sidebar { position: fixed; top: 0; left: 0; bottom: 0; transform: translateX(-100%); }
+  .app-shell.sidebar-open .sidebar { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.3); }
+}
+
+.sidebar-logo {
+  padding: 1rem 1.25rem; border-bottom: 1px solid #1e293b;
+  display: flex; align-items: center; min-height: 60px; gap: 0.5rem;
+}
+.logo-img      { height: 32px; width: auto; display: block; }
+.logo-fallback { font-size: 1.125rem; font-weight: 800; color: white; display: none; flex: 1; }
+
+.sidebar-close {
+  display: none; background: transparent; border: none; color: #64748b;
+  cursor: pointer; margin-left: auto; padding: 4px;
+}
+.sidebar-close mat-icon { font-size: 20px !important; width: 20px !important; height: 20px !important; line-height: 1; }
+@media (max-width: 768px) { .sidebar-close { display: flex; } }
+
+nav {
+  flex: 1; display: flex; flex-direction: column; overflow-y: auto;
+  padding: 0.5rem 0; scrollbar-width: thin; scrollbar-color: #1e293b transparent;
+}
+nav a {
+  display: flex; align-items: center; gap: 0.625rem;
+  padding: 0.6rem 1.25rem; color: #94a3b8; text-decoration: none;
+  font-size: 0.8125rem; border-left: 3px solid transparent; transition: all 0.15s;
+}
+nav a:hover  { background: #1e293b; color: #f1f5f9; }
+nav a.active { background: #1e293b; color: #f1f5f9; font-weight: 600; }
+nav a mat-icon { font-size: 18px !important; width: 18px !important; height: 18px !important; line-height: 1; flex-shrink: 0; }
+
+.nav-section {
+  display: block; font-size: 0.6rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: #475569; padding: 0.875rem 1.25rem 0.25rem;
+}
+
+.logout-btn {
+  display: flex; align-items: center; gap: 0.5rem;
+  margin: 0.5rem 0.75rem 1rem; padding: 0.6rem 1rem;
+  background: transparent; color: #f87171;
+  border: 1px solid #1e293b; border-radius: 8px;
+  font-size: 0.8125rem; cursor: pointer; transition: background 0.15s; flex-shrink: 0;
+}
+.logout-btn:hover { background: #1e293b; }
+.logout-btn mat-icon { font-size: 18px !important; width: 18px !important; height: 18px !important; line-height: 1; }
+
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+
+.topbar {
+  height: 56px; background: white; border-bottom: 1px solid #e2e8f0;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 1.25rem; flex-shrink: 0; gap: 1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+.topbar-left  { display: flex; align-items: center; gap: 0.75rem; }
+.topbar-right { display: flex; align-items: center; gap: 0.5rem; }
+
+.hamburger {
+  background: transparent; border: none; cursor: pointer; color: #64748b;
+  display: flex; align-items: center; padding: 6px; border-radius: 6px; transition: background 0.15s;
+}
+.hamburger:hover { background: #f1f5f9; }
+.hamburger mat-icon { font-size: 22px !important; width: 22px !important; height: 22px !important; line-height: 1; }
+@media (min-width: 769px) { .hamburger { display: none; } }
+
+.portal-title { font-size: 0.875rem; font-weight: 700; color: #1e293b; letter-spacing: 0.01em; }
+
+.user-menu-wrap { position: relative; }
+.user-pill {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: transparent; border: 1.5px solid #e2e8f0; border-radius: 99px;
+  padding: 0.3rem 0.75rem 0.3rem 0.35rem; cursor: pointer; transition: background 0.15s;
+}
+.user-pill:hover { background: #f8fafc; }
+.user-name { font-size: 0.8125rem; font-weight: 600; color: #374151; max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chevron   { font-size: 18px !important; width: 18px !important; height: 18px !important; color: #94a3b8; line-height: 1; }
+
+.avatar-circle {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 800; color: white; flex-shrink: 0;
+}
+.avatar-circle.lg { width: 36px; height: 36px; font-size: 1rem; }
+.avatar-circle.admin   { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.avatar-circle.tutor   { background: linear-gradient(135deg, #8b5cf6, #a855f7); }
+.avatar-circle.student { background: linear-gradient(135deg, #3b82f6, #6366f1); }
+.avatar-circle.parent  { background: linear-gradient(135deg, #10b981, #059669); }
+
+.user-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 220px; background: white; border-radius: 12px;
+  border: 1px solid #e2e8f0; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  z-index: 100; overflow: hidden;
+}
+.user-dropdown-header {
+  display: flex; gap: 0.75rem; align-items: center;
+  padding: 0.875rem 1rem; background: #fafafa;
+}
+.user-dropdown-name  { font-size: 0.875rem; font-weight: 700; color: #1e293b; }
+.user-dropdown-email { font-size: 0.72rem; color: #94a3b8; }
+.user-dropdown-divider { height: 1px; background: #f1f5f9; }
+.user-dropdown-item {
+  display: flex; align-items: center; gap: 0.625rem;
+  padding: 0.7rem 1rem; font-size: 0.8125rem; color: #374151;
+  text-decoration: none; background: transparent; border: none;
+  width: 100%; cursor: pointer; transition: background 0.1s; font-weight: 500;
+}
+.user-dropdown-item:hover { background: #f8fafc; }
+.user-dropdown-item.danger { color: #ef4444; }
+.user-dropdown-item.danger:hover { background: #fff1f2; }
+.user-dropdown-item mat-icon { font-size: 18px !important; width: 18px !important; height: 18px !important; line-height: 1; }
+
+.content {
+  flex: 1; padding: 1.75rem; overflow-y: auto; background: #f1f5f9;
+  scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent;
+}
+@media (max-width: 640px) { .content { padding: 1rem; } }

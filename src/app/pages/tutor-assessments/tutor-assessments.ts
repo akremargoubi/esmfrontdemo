@@ -2,19 +2,17 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { MatIconModule } from '@angular/material/icon';
 import { AssessmentService, Assessment } from '../../services/assessment.service';
-import { CourseService } from '../../services/course.service';
-import { catchError } from 'rxjs/operators';
-import { of, switchMap } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { MOCK_CLASSES } from '../../core/mock/mock-data';
 
+const TUTOR_ID = '2';
 const PAGE_SIZE = 6;
 
 @Component({
   selector: 'app-tutor-assessments',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule],
   templateUrl: './tutor-assessments.html',
   styleUrls: ['./tutor-assessments.css']
 })
@@ -23,10 +21,7 @@ export class TutorAssessments implements OnInit {
   assessments: Assessment[] = [];
   assessmentTypes: string[] = [];
   assessmentStatuses: string[] = [];
-  courses: any[] = [];
-
   myClasses: { id: number; name: string; level: string; specialty: string }[] = [];
-  tutorId = '';
 
   selectedAssessment: Assessment = { title: '', courseName: '', type: '', status: '' };
   showForm = false;
@@ -57,34 +52,18 @@ export class TutorAssessments implements OnInit {
 
   constructor(
     private assessmentService: AssessmentService,
-    private courseService: CourseService,
-    private http: HttpClient,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.http.get<any>(`${environment.apiUrl}/api/users/me`).pipe(
-      catchError(() => of(null)),
-      switchMap(profile => {
-        this.tutorId = profile?.id ?? profile?.uuid ?? '';
-        return this.http.get<any[]>(`${environment.apiUrl}/api/classes`).pipe(catchError(() => of([])));
-      })
-    ).subscribe((classes: any[]) => {
-      this.myClasses = (classes || [])
-        .filter(c => c.tutorId === this.tutorId)
-        .map(c => ({ id: c.id, name: c.name, level: c.level ?? '', specialty: c.specialty ?? '' }));
-      this.refresh();
-    });
+    this.myClasses = MOCK_CLASSES
+      .filter(c => c.tutorId === TUTOR_ID)
+      .map(c => ({ id: c.id, name: c.name, level: c.level ?? '', specialty: c.specialty ?? '' }));
     this.loadAssessments();
     this.loadEnums();
-    this.loadCourses();
   }
 
   private refresh(): void { this.cdr.detectChanges(); }
-
-  loadCourses(): void {
-    this.courseService.getAll().pipe(catchError(() => of([]))).subscribe(data => { this.courses = data; this.refresh(); });
-  }
 
   toggleStartTimePicker(): void { this.showStartTimePicker = !this.showStartTimePicker; this.showEndTimePicker = false; this.refresh(); }
   toggleEndTimePicker(): void   { this.showEndTimePicker = !this.showEndTimePicker; this.showStartTimePicker = false; this.refresh(); }
@@ -187,12 +166,12 @@ export class TutorAssessments implements OnInit {
     };
     if (this.editMode && this.selectedAssessment.id) {
       this.assessmentService.update(this.selectedAssessment.id, payload).subscribe({
-        next: u => { const i = this.assessments.findIndex(a => a.id === u.id); if (i !== -1) this.assessments[i] = u; this.assessments = [...this.assessments]; this.updateStats(); this.showForm = false; this.showNotif('Assessment updated ✓', 'success'); this.refresh(); },
+        next: u => { const i = this.assessments.findIndex(a => a.id === u.id); if (i !== -1) this.assessments[i] = u; this.assessments = [...this.assessments]; this.updateStats(); this.showForm = false; this.showNotif('Assessment updated', 'success'); this.refresh(); },
         error: () => { this.showNotif('Error updating assessment.', 'error'); this.refresh(); }
       });
     } else {
       this.assessmentService.create(payload).subscribe({
-        next: c => { this.assessments = [...this.assessments, c]; this.updateStats(); this.showForm = false; this.showNotif('Assessment created ✓', 'success'); this.refresh(); },
+        next: c => { this.assessments = [...this.assessments, c]; this.updateStats(); this.showForm = false; this.showNotif('Assessment created', 'success'); this.refresh(); },
         error: () => { this.showNotif('Error creating assessment.', 'error'); this.refresh(); }
       });
     }
@@ -201,7 +180,7 @@ export class TutorAssessments implements OnInit {
   deleteAssessment(id: number): void {
     this.showNotif('Delete this assessment?', 'confirm', () => {
       this.assessmentService.delete(id).subscribe({
-        next: () => { this.assessments = this.assessments.filter(a => a.id !== id); this.updateStats(); this.showNotif('Deleted ✓', 'success'); this.refresh(); },
+        next: () => { this.assessments = this.assessments.filter(a => a.id !== id); this.updateStats(); this.showNotif('Deleted', 'success'); this.refresh(); },
         error: () => { this.showNotif('Error deleting assessment.', 'error'); this.refresh(); }
       });
     });

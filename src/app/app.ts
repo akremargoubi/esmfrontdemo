@@ -3,16 +3,12 @@ import { RouterOutlet, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Header } from './header/header';
 import { Footer } from './footer/footer';
+import { ToastComponent } from './shared/toast/toast.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterOutlet,
-    Header,
-    Footer
-  ],
+  imports: [CommonModule, RouterOutlet, Header, Footer, ToastComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

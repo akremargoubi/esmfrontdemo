@@ -1,0 +1,147 @@
+<div class="page">
+
+  <!-- ── Header ──────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Parent Dashboard</h1>
+      <p class="page-sub">Welcome back, {{ parentName }}</p>
+    </div>
+  </div>
+
+  <!-- ── Loading ─────────────────────────────────────────────────────── -->
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <span>Loading…</span>
+    </div>
+  }
+
+  @if (!loading) {
+    <!-- ── No children ────────────────────────────────────────────────── -->
+    @if (children.length === 0) {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">family_restroom</mat-icon>
+        <h3>No children linked</h3>
+        <p>Ask an administrator to link your children to your account.</p>
+      </div>
+    }
+
+    <!-- ── Children cards ────────────────────────────────────────────── -->
+    @if (children.length > 0) {
+      <div class="section-label">My Children ({{ children.length }})</div>
+      <div class="children-grid">
+        @for (child of children; track child.id) {
+          <div class="child-card">
+            <div class="child-card-header">
+              <div class="child-avatar">{{ (child.firstName || '?')[0].toUpperCase() }}</div>
+              <div class="child-info">
+                <div class="child-name">{{ child.firstName }} {{ child.lastName }}</div>
+                <span class="badge badge-class">{{ child.className || 'No class' }}</span>
+              </div>
+            </div>
+
+            <div class="wallet-row">
+              <span class="wallet-label">
+                <mat-icon>account_balance_wallet</mat-icon>
+                Wallet Balance
+              </span>
+              <span class="wallet-amount">{{ child.walletBalance | number:'1.0-2' }} TND</span>
+            </div>
+
+            <button class="btn-primary w-full" (click)="openTopup(child)">
+              <mat-icon>add_card</mat-icon>
+              Top-Up Wallet
+            </button>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ── Quick access ───────────────────────────────────────────────── -->
+    <div class="section-label" style="margin-top: 2rem">Quick Access</div>
+    <div class="quick-grid">
+      <a routerLink="/parent/grades" class="quick-card">
+        <div class="quick-icon" style="background:#ede9fe;color:#7c3aed"><mat-icon>grade</mat-icon></div>
+        <div class="quick-label">Grades</div>
+        <div class="quick-sub">Academic performance</div>
+      </a>
+      <a routerLink="/parent/planning" class="quick-card">
+        <div class="quick-icon" style="background:#dbeafe;color:#1d4ed8"><mat-icon>event_note</mat-icon></div>
+        <div class="quick-label">Planning</div>
+        <div class="quick-sub">Exams & schedules</div>
+      </a>
+      <a routerLink="/parent/payments" class="quick-card">
+        <div class="quick-icon" style="background:#d1fae5;color:#047857"><mat-icon>payments</mat-icon></div>
+        <div class="quick-label">Payments</div>
+        <div class="quick-sub">History & top-up</div>
+      </a>
+    </div>
+
+    <!-- ── Recent payments ────────────────────────────────────────────── -->
+    @if (recentPayments.length > 0) {
+      <div class="section-label" style="margin-top: 2rem">Recent Payments</div>
+      <div class="card">
+        <table class="data-table">
+          <thead>
+            <tr><th>Student</th><th>Description</th><th>Amount</th><th>Status</th><th>Due</th></tr>
+          </thead>
+          <tbody>
+            @for (p of recentPayments; track p.id) {
+              <tr>
+                <td>{{ p.studentName }}</td>
+                <td class="text-muted">{{ p.description }}</td>
+                <td class="font-bold">{{ p.amount }} TND</td>
+                <td><span class="badge" [ngClass]="getStatusClass(p.status)">{{ p.status }}</span></td>
+                <td class="text-muted">{{ p.dueDate | date:'dd MMM yyyy' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+
+  <!-- ── Top-Up Modal ─────────────────────────────────────────────────── -->
+  @if (showTopupModal && selectedChild) {
+    <div class="modal-overlay" (click)="closeTopup()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2 class="modal-title">Top-Up Wallet</h2>
+          <button class="modal-close" (click)="closeTopup()"><mat-icon>close</mat-icon></button>
+        </div>
+
+        <p class="modal-sub">
+          Adding funds to <strong>{{ selectedChild.firstName }} {{ selectedChild.lastName }}</strong>'s account.
+        </p>
+
+        @if (topupError) {
+          <div class="form-error">{{ topupError }}</div>
+        }
+
+        <div class="wallet-row mb-4">
+          <span class="wallet-label"><mat-icon>account_balance_wallet</mat-icon>Current Balance</span>
+          <span class="wallet-amount">{{ selectedChild.walletBalance | number:'1.0-2' }} TND</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Amount to add (TND) *</label>
+          <input type="number" [(ngModel)]="topupAmount" min="1" placeholder="e.g. 100" class="form-input" />
+          <div class="preset-row">
+            @for (q of [50, 100, 200, 300]; track q) {
+              <button type="button" (click)="topupAmount = q" class="preset-btn"
+                [class.active]="topupAmount === q">{{ q }}</button>
+            }
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-primary" (click)="confirmTopup()" [disabled]="submitting"
+            [class.loading]="submitting">
+            {{ submitting ? 'Processing…' : 'Add Funds' }}
+          </button>
+          <button class="btn-ghost" (click)="closeTopup()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

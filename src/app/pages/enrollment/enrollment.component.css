@@ -1,1 +1,177 @@
-/* Enrollment component styles */
+/* ── Enrollment Page ─────────────────────────────────────────────────── */
+.enroll-page { font-family: 'Inter', system-ui, sans-serif; max-width: 1400px; }
+
+.enroll-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 1.75rem; flex-wrap: wrap; gap: 1rem;
+}
+.enroll-title { font-size: 1.5rem; font-weight: 700; color: #0f172a; margin: 0 0 0.25rem; }
+.enroll-sub   { font-size: 0.875rem; color: #64748b; margin: 0; }
+
+.btn-primary-enroll {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white; border: none; border-radius: 8px; padding: 0.6rem 1.125rem;
+  font-size: 0.875rem; font-weight: 600; cursor: pointer;
+  transition: opacity 0.15s;
+}
+.btn-primary-enroll:hover { opacity: 0.9; }
+
+/* KPI grid */
+.enroll-kpi-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem; margin-bottom: 1.5rem;
+}
+.enroll-kpi-card {
+  background: white; border-radius: 12px; padding: 1.25rem;
+  border: 1px solid #f1f5f9; display: flex; align-items: flex-start; gap: 1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.enroll-kpi-icon {
+  width: 44px; height: 44px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.125rem; flex-shrink: 0;
+}
+.enroll-kpi-value { font-size: 1.5rem; font-weight: 800; color: #0f172a; line-height: 1; margin-bottom: 3px; }
+.enroll-kpi-label { font-size: 0.8rem; font-weight: 600; color: #64748b; }
+.enroll-kpi-trend { font-size: 0.72rem; color: #94a3b8; margin-top: 3px; }
+
+/* Filters */
+.enroll-filters {
+  display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center;
+  background: white; border-radius: 10px; padding: 0.875rem 1rem;
+  border: 1px solid #f1f5f9; margin-bottom: 1.25rem;
+}
+.enroll-search, .enroll-select {
+  border: 1.5px solid #e2e8f0; border-radius: 8px;
+  padding: 0.5rem 0.875rem; font-size: 0.875rem; outline: none;
+  background: white; transition: border-color 0.15s;
+}
+.enroll-search { flex: 1; min-width: 200px; }
+.enroll-search:focus, .enroll-select:focus { border-color: #6366f1; }
+.enroll-count { font-size: 0.8rem; font-weight: 600; color: #64748b; margin-left: auto; white-space: nowrap; }
+
+/* Loading */
+.enroll-loading { display: flex; align-items: center; gap: 0.75rem; padding: 2rem; color: #64748b; }
+.enroll-spinner {
+  width: 24px; height: 24px; border: 3px solid #e2e8f0;
+  border-top-color: #6366f1; border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Enrollment card grid */
+.enroll-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.enroll-card {
+  background: white; border-radius: 12px; padding: 1.25rem;
+  border: 1px solid #f1f5f9; box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  display: flex; flex-direction: column; gap: 1rem;
+  transition: box-shadow 0.15s;
+}
+.enroll-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+.enroll-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
+.enroll-student-cell { display: flex; align-items: center; gap: 0.625rem; }
+.enroll-avatar {
+  width: 38px; height: 38px; border-radius: 50%; background: #ede9fe; color: #7c3aed;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.875rem; font-weight: 700; flex-shrink: 0;
+}
+.enroll-student-name { font-weight: 700; font-size: 0.875rem; color: #0f172a; }
+.enroll-course-name  { font-size: 0.75rem; color: #64748b; margin-top: 1px; }
+
+.enroll-status-badge {
+  display: inline-flex; padding: 3px 10px; border-radius: 99px;
+  font-size: 0.72rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+}
+.status-active    { background: #d1fae5; color: #065f46; }
+.status-completed { background: #dbeafe; color: #1e40af; }
+.status-cancelled { background: #f1f5f9; color: #64748b; }
+
+/* Progress */
+.enroll-progress-label {
+  display: flex; justify-content: space-between; margin-bottom: 5px;
+  font-size: 0.75rem; font-weight: 600; color: #64748b;
+}
+.enroll-progress-pct { font-weight: 700; color: #374151; }
+.enroll-progress-track {
+  height: 8px; background: #f1f5f9; border-radius: 99px; overflow: hidden;
+}
+.enroll-progress-fill { height: 100%; border-radius: 99px; transition: width 0.4s ease; min-width: 4px; }
+
+.enroll-card-meta { font-size: 0.72rem; color: #94a3b8; }
+
+.enroll-card-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
+.enroll-act-btn {
+  padding: 0.375rem 0.875rem; border: none; border-radius: 6px;
+  font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: opacity 0.15s;
+}
+.enroll-act-btn.cancel { background: #fef3c7; color: #92400e; }
+.enroll-act-btn.cancel:hover { background: #fde68a; }
+.enroll-act-btn.delete { background: #fee2e2; color: #dc2626; }
+.enroll-act-btn.delete:hover { background: #fecaca; }
+
+/* Empty state */
+.enroll-empty {
+  grid-column: 1 / -1; text-align: center; padding: 3rem;
+  background: white; border-radius: 12px; border: 1px solid #f1f5f9;
+}
+.enroll-empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.enroll-empty p { color: #64748b; margin-bottom: 1rem; }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center; z-index: 10000;
+}
+.modal-box {
+  background: white; padding: 1.75rem; border-radius: 16px;
+  width: 100%; max-width: 460px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+}
+.modal-head {
+  display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;
+}
+.modal-head h3 { font-size: 1.125rem; font-weight: 700; color: #0f172a; margin: 0; }
+.modal-close {
+  background: #f1f5f9; border: none; cursor: pointer; border-radius: 6px;
+  width: 30px; height: 30px; font-size: 1.125rem; display: flex;
+  align-items: center; justify-content: center; color: #64748b;
+}
+.modal-close:hover { background: #e2e8f0; }
+.modal-error {
+  background: #fee2e2; color: #dc2626; padding: 0.625rem 0.875rem;
+  border-radius: 8px; font-size: 0.8125rem; margin-bottom: 1rem;
+}
+.modal-field { margin-bottom: 1rem; }
+.modal-field label { display: block; font-size: 0.875rem; font-weight: 600; color: #374151; margin-bottom: 0.375rem; }
+.modal-input {
+  width: 100%; border: 1.5px solid #e2e8f0; border-radius: 8px;
+  padding: 0.6rem 0.875rem; font-size: 0.875rem; outline: none; box-sizing: border-box;
+  background: white; transition: border-color 0.15s;
+}
+.modal-input:focus { border-color: #6366f1; }
+.modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem; }
+.btn-cancel {
+  padding: 0.6rem 1.125rem; border-radius: 8px; border: 1.5px solid #e2e8f0;
+  background: white; color: #374151; font-weight: 600; font-size: 0.875rem; cursor: pointer;
+}
+.btn-save {
+  padding: 0.6rem 1.25rem; border-radius: 8px; border: none;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white; font-weight: 600; font-size: 0.875rem; cursor: pointer;
+}
+.btn-save:hover:not(:disabled) { opacity: 0.9; }
+.btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+@media (max-width: 768px) {
+  .enroll-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .enroll-filters  { flex-direction: column; }
+  .enroll-search   { min-width: unset; width: 100%; }
+  .enroll-grid     { grid-template-columns: 1fr; }
+}

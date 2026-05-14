@@ -17,7 +17,12 @@
       "Bash(Get-ChildItem -Path \"d:\\\\PI 4 SAE INTEGRATION\\\\FrontEnd\" -Recurse -Force)",
       "Bash(Select-Object FullName)",
       "Bash(Head -20)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(Get-ChildItem -Path \"d:\\\\pifrontdemo\\\\FrontEnd\" -Force)",
+      "Bash(Select-Object -Property Name, PSIsContainer)",
+      "Bash(Sort-Object Name)",
+      "Bash(Get-ChildItem -Path \"d:\\\\pifrontdemo\\\\FrontEnd\" -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)"
     ]
   }
 }

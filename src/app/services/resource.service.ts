@@ -1,33 +1,48 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { Observable, of } from 'rxjs';
+import { delay } from 'rxjs/operators';
+import { MOCK_RESOURCES } from '../core/mock/mock-data';
 
 export interface LearningResource {
   id?: number;
   title: string;
   type: string;
-  published: boolean;
+  published?: boolean;
   fileUrl?: string;
   assessmentId: number;
+  uploadedAt?: string;
+  size?: string;
 }
+
+let _resources: LearningResource[] = [...MOCK_RESOURCES];
 
 @Injectable({ providedIn: 'root' })
 export class ResourcesService {
 
-  private api = `${environment.apiUrl}/api/resources`;
-
-  constructor(private http: HttpClient) { }
-
   getByAssessment(assessmentId: number): Observable<LearningResource[]> {
-    return this.http.get<LearningResource[]>(`${this.api}/assessment/${assessmentId}`);
+    return of(_resources.filter(r => r.assessmentId === assessmentId)).pipe(delay(200));
   }
 
-  upload(formData: FormData): Observable<any> {
-    return this.http.post(`${this.api}/upload`, formData);
+  getAll(): Observable<LearningResource[]> {
+    return of([..._resources]).pipe(delay(200));
   }
 
-  delete(id: number): Observable<any> {
-    return this.http.delete(`${this.api}/${id}`, { observe: 'response' });
+  upload(_formData: FormData): Observable<LearningResource> {
+    const created: LearningResource = {
+      id: Math.max(0, ..._resources.map(r => r.id ?? 0)) + 1,
+      title: 'Uploaded Resource',
+      type: 'PDF',
+      published: true,
+      assessmentId: 0,
+      uploadedAt: new Date().toISOString(),
+      size: '1.0 MB',
+    };
+    _resources = [..._resources, created];
+    return of(created).pipe(delay(600));
+  }
+
+  delete(id: number): Observable<{ status: number }> {
+    _resources = _resources.filter(r => r.id !== id);
+    return of({ status: 204 }).pipe(delay(300));
   }
 }

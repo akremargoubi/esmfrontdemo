@@ -1,0 +1,131 @@
+<div class="att-page">
+
+  <!-- Header -->
+  <div class="att-header">
+    <div>
+      <h1 class="att-title">My Attendance</h1>
+      <p class="att-sub">Track your presence, punctuality &amp; participation</p>
+    </div>
+  </div>
+
+  <!-- Stats row -->
+  <div class="att-stats">
+    <!-- Rate ring -->
+    <div class="att-rate-card">
+      <svg class="att-ring" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="#f1f5f9" stroke-width="10"/>
+        <circle cx="50" cy="50" r="40" fill="none"
+                [attr.stroke]="rateColor()"
+                stroke-width="10"
+                stroke-linecap="round"
+                [attr.stroke-dasharray]="circumference"
+                [attr.stroke-dashoffset]="dashOffset"
+                transform="rotate(-90 50 50)"
+                style="transition: stroke-dashoffset 0.8s ease;"/>
+        <text x="50" y="46" text-anchor="middle" font-size="16" font-weight="800" fill="#1e293b">{{ attendanceRate }}%</text>
+        <text x="50" y="58" text-anchor="middle" font-size="7" fill="#64748b">RATE</text>
+      </svg>
+      <div class="att-rate-label">Attendance Rate</div>
+      <div class="att-rate-sub">
+        @if (attendanceRate >= 80) { 🟢 Excellent }
+        @else if (attendanceRate >= 60) { 🟡 Needs improvement }
+        @else { 🔴 At risk }
+      </div>
+    </div>
+
+    <!-- Stat pills -->
+    <div class="att-pills">
+      <div class="att-pill att-pill-green">
+        <div class="att-pill-val">{{ present }}</div>
+        <div class="att-pill-lbl">✅ Present</div>
+      </div>
+      <div class="att-pill att-pill-red">
+        <div class="att-pill-val">{{ absent }}</div>
+        <div class="att-pill-lbl">❌ Absent</div>
+      </div>
+      <div class="att-pill att-pill-yellow">
+        <div class="att-pill-val">{{ late }}</div>
+        <div class="att-pill-lbl">⏰ Late</div>
+      </div>
+      <div class="att-pill att-pill-blue">
+        <div class="att-pill-val">{{ total }}</div>
+        <div class="att-pill-lbl">📋 Total</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="att-filters">
+    <div class="att-filter-group">
+      <label class="att-filter-lbl">Month</label>
+      <select class="att-select" [(ngModel)]="filterMonth" (change)="applyFilters()">
+        <option value="ALL">All Months</option>
+        @for (m of availableMonths; track m) {
+          <option [value]="m">{{ monthLabel(m) }}</option>
+        }
+      </select>
+    </div>
+    <div class="att-status-tabs">
+      @for (s of ['ALL','PRESENT','ABSENT','LATE']; track s) {
+        <button class="att-tab" [class.active]="filterStatus === s"
+                (click)="filterStatus = s; applyFilters()">
+          @if (s === 'PRESENT') { ✅ }
+          @else if (s === 'ABSENT') { ❌ }
+          @else if (s === 'LATE') { ⏰ }
+          {{ s === 'ALL' ? 'All' : s | titlecase }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading -->
+  @if (loading) {
+    <div class="att-loading">
+      <div class="att-spinner"></div>
+      <span>Loading attendance records…</span>
+    </div>
+  }
+
+  <!-- Table -->
+  @if (!loading) {
+    <div class="att-table-wrap">
+      @if (records.length === 0) {
+        <div class="att-empty">
+          <span style="font-size:3rem">📭</span>
+          <p>No records match your filters.</p>
+        </div>
+      } @else {
+        <table class="att-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Course</th>
+              <th>Status</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of records; track r.date) {
+              <tr>
+                <td class="att-date">{{ r.date | date:'EEE, dd MMM yyyy' }}</td>
+                <td class="att-course">{{ r.course || '—' }}</td>
+                <td>
+                  <span class="att-badge"
+                        [style.background]="statusBg(r.status)"
+                        [style.color]="statusColor(r.status)">
+                    @if (r.status === 'PRESENT') { ✅ }
+                    @else if (r.status === 'ABSENT') { ❌ }
+                    @else { ⏰ }
+                    {{ r.status | titlecase }}
+                  </span>
+                </td>
+                <td class="att-note">{{ r.note || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  }
+
+</div>

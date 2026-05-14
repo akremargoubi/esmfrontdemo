@@ -1,0 +1,167 @@
+<div class="pp-page">
+
+  <div class="pp-header">
+    <div>
+      <h1 class="pp-title">Planning</h1>
+      <p class="pp-sub">Schedule, assessments and attendance for your children</p>
+    </div>
+  </div>
+
+  <!-- Child tabs -->
+  @if (children.length > 1) {
+    <div class="pp-child-tabs">
+      @for (c of children; track c.id) {
+        <button class="pp-child-tab" [class.active]="selected?.id === c.id" (click)="selectChild(c)">
+          <span class="pp-tab-av">{{ c.firstName[0] }}</span>
+          {{ c.firstName }} · {{ c.className }}
+        </button>
+      }
+    </div>
+  }
+
+  @if (!selected) {
+    <div class="pp-empty"><mat-icon>family_restroom</mat-icon><p>No children linked.</p></div>
+  }
+
+  @if (selected) {
+    <div class="pp-grid">
+
+      <!-- ── Left: Schedule + Assessments ───────────────────────── -->
+      <div class="pp-left">
+
+        <!-- Upcoming Assessments -->
+        <div class="pp-card">
+          <div class="pp-card-head">
+            <h2 class="pp-card-title"><mat-icon>assignment</mat-icon> Upcoming Tests</h2>
+          </div>
+          @if (assessments.length === 0) {
+            <div class="pp-empty-sm">No upcoming assessments for {{ selected.className }}.</div>
+          }
+          @for (a of assessments; track a.id) {
+            <div class="pp-assessment-row">
+              <div class="pp-assess-left">
+                <div class="pp-assess-icon"
+                     [style.background]="a.type === 'EXAM' ? '#ede9fe' : a.type === 'QUIZ' ? '#fce7f3' : '#dbeafe'"
+                     [style.color]="a.type === 'EXAM' ? '#7c3aed' : a.type === 'QUIZ' ? '#be185d' : '#1d4ed8'">
+                  <mat-icon>{{ a.type === 'EXAM' ? 'description' : a.type === 'QUIZ' ? 'quiz' : 'task' }}</mat-icon>
+                </div>
+                <div>
+                  <div class="pp-assess-title">{{ a.title }}</div>
+                  <div class="pp-assess-meta">{{ a.courseName }} · {{ a.type }}</div>
+                </div>
+              </div>
+              <div class="pp-assess-right">
+                <div class="pp-assess-date">{{ a.startDate | date:'dd MMM' }}</div>
+                <div class="pp-countdown" [style.color]="'#6366f1'">{{ getCountdown(a.startDate) }}</div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Class Schedule -->
+        <div class="pp-card">
+          <div class="pp-card-head">
+            <h2 class="pp-card-title"><mat-icon>calendar_month</mat-icon> Weekly Schedule</h2>
+            <span class="pp-class-chip">{{ selected.className }}</span>
+          </div>
+          @if (schedule.length === 0) {
+            <div class="pp-empty-sm">No schedule found for {{ selected.className }}.</div>
+          }
+          @for (day of DAYS; track day) {
+            @if (forDay(day).length > 0) {
+              <div class="pp-day-group">
+                <div class="pp-day-label">
+                  <span class="pp-day-dot" [style.background]="dayColor(day)"></span>
+                  {{ day }}
+                </div>
+                <div class="pp-slots">
+                  @for (s of forDay(day); track s.id) {
+                    <div class="pp-slot" [style.border-left-color]="dayColor(day)">
+                      <div class="pp-slot-course">{{ s.courseName }}</div>
+                      <div class="pp-slot-meta">
+                        <mat-icon style="font-size:12px;width:12px;height:12px">schedule</mat-icon>
+                        {{ s.startTime }}–{{ s.endTime }}
+                        <span class="pp-slot-room">
+                          <mat-icon style="font-size:12px;width:12px;height:12px">room</mat-icon>
+                          {{ s.room }}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+      </div>
+
+      <!-- ── Right: Events + Attendance ─────────────────────────── -->
+      <div class="pp-right">
+
+        <!-- School Events -->
+        @if (events.length > 0) {
+          <div class="pp-card">
+            <div class="pp-card-head">
+              <h2 class="pp-card-title"><mat-icon>event</mat-icon> School Events</h2>
+            </div>
+            @for (e of events; track e.id) {
+              <div class="pp-event-row">
+                <div class="pp-event-icon" [style.background]="eventColor(e.type) + '20'" [style.color]="eventColor(e.type)">
+                  <mat-icon>{{ eventIcon(e.type) }}</mat-icon>
+                </div>
+                <div class="pp-event-info">
+                  <div class="pp-event-title">{{ e.title }}</div>
+                  <div class="pp-event-meta">
+                    {{ e.startDate | date:'dd MMM' }}
+                    @if (e.startDate !== e.endDate) { — {{ e.endDate | date:'dd MMM' }} }
+                    · {{ e.className }}
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Attendance -->
+        <div class="pp-card">
+          <div class="pp-card-head">
+            <h2 class="pp-card-title"><mat-icon>fact_check</mat-icon> Attendance</h2>
+          </div>
+
+          <!-- Mini stats -->
+          <div class="pp-att-stats">
+            <div class="pp-att-stat">
+              <span class="pp-att-num" [style.color]="attRate >= 85 ? '#16a34a' : attRate >= 70 ? '#d97706' : '#dc2626'">{{ attRate }}%</span>
+              <span class="pp-att-lbl">Rate</span>
+            </div>
+            <div class="pp-att-stat">
+              <span class="pp-att-num" style="color:#16a34a">{{ presentCount }}</span>
+              <span class="pp-att-lbl">Present</span>
+            </div>
+            <div class="pp-att-stat">
+              <span class="pp-att-num" style="color:#dc2626">{{ attendance.length - presentCount }}</span>
+              <span class="pp-att-lbl">Absent/Late</span>
+            </div>
+          </div>
+
+          @if (attendance.length === 0) {
+            <div class="pp-empty-sm">No attendance records.</div>
+          }
+          @for (r of attendance; track r.id) {
+            <div class="pp-att-row">
+              <span class="pp-att-date">{{ r.date | date:'dd MMM' }}</span>
+              <span class="pp-att-course">{{ r.courseName }}</span>
+              <span class="pp-att-badge"
+                    [style.background]="attBg(r.status)"
+                    [style.color]="attColor(r.status)">
+                {{ r.status }}
+              </span>
+            </div>
+          }
+        </div>
+
+      </div>
+    </div>
+  }
+</div>
